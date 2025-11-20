@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İzin Talep Portalı (Pro)</title>
+    <style>
+        :root { --primary: #2563eb; --bg: #f1f5f9; --ik-color: #7c3aed; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
+        .nav-btn { flex: 1; padding: 12px; border: none; background: #e2e8f0; color: #64748b; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .nav-btn:hover { opacity: 0.8; }
+        .nav-btn.active[data-role="personel"] { background: var(--primary); color: white; }
+        .nav-btn.active[data-role="yonetici"] { background: #f59e0b; color: white; }
+        .nav-btn.active[data-role="ik"] { background: var(--ik-color); color: white; }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; color: #334155; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        
+        button.submit-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button.submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 0.95em; vertical-align: top; }
+        th { background: #f8fafc; color: #64748b; }
+
+        .status { padding: 4px 8px; border-radius: 12px; font-size: 0.75em; font-weight: bold; display: inline-block; margin-bottom: 4px; }
+        .st-tl_bekliyor { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+        .st-ik_bekliyor { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; }
+        .st-onaylandi { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .st-red { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+        .day-badge { background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; font-weight: bold; margin-left: 5px; }
+        .project-badge { background: #334155; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; margin-left: 5px; }
+
+        .action-btn { padding: 6px 12px; margin-right: 5px; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 0.9em; }
+        .approve { background: #22c55e; } 
+        .reject { background: #ef4444; }
+        
+        .hidden { display: none; }
+        .loading { text-align: center; color: var(--primary); font-weight: bold; margin: 20px 0; }
+        
+        .audit-info { font-size: 0.8em; color: #64748b; margin-top: 4px; font-style: italic; }
+        .reject-reason { color: #ef4444; font-weight: bold; font-size: 0.85em; display: block; margin-top: 2px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="text-align:center; color:#1e293b;">İzin Yönetim Sistemi</h2>
+    
+    <div class="nav-buttons">
+        <button class="nav-btn active" data-role="personel" onclick="switchRole('personel')">👤 Personel</button>
+        <button class="nav-btn" data-role="yonetici" onclick="switchRole('yonetici')">🛡️ Yönetici (TL)</button>
+        <button class="nav-btn" data-role="ik" onclick="switchRole('ik')">🏢 İK</button>
+    </div>
+
+    <div id="personel-panel">
+        <div class="panel-info" style="background:#eff6ff; padding:10px; border-radius:6px; color:#1e40af; margin-bottom:15px;">
+            👋 Yeni izin talebi oluşturabilir veya geçmiş izinlerini sorgulayabilirsin.
+        </div>
+
+        <form id="leaveForm" onsubmit="submitLeave(event)">
+            <div class="form-group">
+                <label>Ad Soyad</label>
+                <input type="text" id="name" placeholder="Adınız ve Soyadınız" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Proje</label>
+                <select id="project" required>
+                    <option value="" disabled selected>Seçiniz...</option>
+                    <option value="TTNET">TTNET</option>
+                    <option value="TÜRKNET">TÜRKNET</option>
+                    <option value="OSK">OSK</option>
+                    <option value="SSPORT">SSPORT</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="display:flex; gap:10px;">
+                <div style="flex:1">
+                    <label>Başlangıç</label>
+                    <input type="date" id="startDate" onchange="calcDays()" required>
+                </div>
+                <div style="flex:1">
+                    <label>Bitiş</label>
+                    <input type="date" id="endDate" onchange="calcDays()" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Toplam: <span id="dayPreview" style="font-weight:normal">-</span></label>
+            </div>
+            <div class="form-group">
+                <label>İzin Türü</label>
+                <select id="type">
+                    <option value="Yıllık İzin">Yıllık İzin</option>
+                    <option value="Hastalık">Hastalık Raporu</option>
+                    <option value="Mazeret">Mazeret İzni</option>
+                    <option value="Diğer">Diğer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Açıklama</label>
+                <textarea id="reason" rows="3" placeholder="İzin nedeni..." required></textarea>
+            </div>
+            <button type="submit" class="submit-btn" id="btnSubmit">Talebi Gönder</button>
+        </form>
+
+        <div id="history-area" style="margin-top: 30px; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
+            <h4>📂 Geçmiş İzinlerim</h4>
+            <p style="font-size:0.9em; color:#64748b;">Yukarıya adınızı yazıp aşağıdaki butona basarak eski taleplerinizin durumunu görebilirsiniz.</p>
+            <button type="button" style="background:#475569; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer;" onclick="loadRequests('personel')">Geçmişimi Getir</button>
+            
+            <div id="personelHistoryTable" class="hidden" style="margin-top:15px;">
+                <table style="font-size:0.9em;">
+                    <thead>
+                        <tr><th>Tarihler</th><th>Durum / Detay</th></tr>
+                    </thead>
+                    <tbody id="personelTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-panel" class="hidden">
+        <div id="admin-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <div id="admin-msg" style="padding:10px; border-radius:6px; background:#fffbeb; color:#92400e; flex:1;"></div>
+            <div style="margin-left:10px; font-size:0.9em; color:#64748b;">Giriş Yapan: <strong id="activeAdminName"></strong></div>
+        </div>
+        
+        <div id="loader" class="loading hidden">Veriler Yükleniyor...</div>
+        
+        <table id="requestsTable">
+            <thead>
+                <tr>
+                    <th style="width:25%">Personel / Proje</th>
+                    <th style="width:25%">Tarih / Gün</th>
+                    <th style="width:30%">Tür / Açıklama</th>
+                    <th style="width:20%">Durum / İşlem</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // *** YENİ LİNK EKLENDİ ***
+    const API_URL = "https://script.google.com/macros/s/AKfycby1QGB4lpO_VRt-PYCORj9DggoYvvwGPcSxGq4gTD9deYPpyNQr1bjMwncaKW6hGxgeSw/exec";
+    
+    const YONETICI_SIFRE = "96421"; 
+    const IK_SIFRE = "snn128936";       
+
+    let currentRole = 'personel';
+    let currentAdminName = '';
+
+    function switchRole(role) {
+        currentAdminName = '';
+        document.getElementById('activeAdminName').innerText = '';
+
+        if (role === 'yonetici') {
+            let pass = prompt("Lütfen Yönetici (TL) Şifresini Giriniz:");
+            if (pass !== YONETICI_SIFRE) { alert("Hatalı şifre!"); return; }
+            
+            let adminName = prompt("İşlem kaydı için lütfen Adınızı Soyadınızı giriniz:");
+            if(!adminName) { alert("İsim girmeden panele erişemezsiniz."); return; }
+            currentAdminName = adminName;
+        } 
+        else if (role === 'ik') {
+            let pass = prompt("Lütfen İnsan Kaynakları (İK) Şifresini Giriniz:");
+            if (pass !== IK_SIFRE) { alert("Hatalı şifre!"); return; }
+            
+            let adminName = prompt("İşlem kaydı için lütfen Adınızı Soyadınızı giriniz:");
+            if(!adminName) { alert("İsim girmeden panele erişemezsiniz."); return; }
+            currentAdminName = adminName;
+        }
+
+        currentRole = role;
+        if(currentAdminName) document.getElementById('activeAdminName').innerText = currentAdminName;
+        
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector(`[data-role="${role}"]`).classList.add('active');
+
+        document.getElementById('personel-panel').classList.toggle('hidden', role !== 'personel');
+        document.getElementById('admin-panel').classList.toggle('hidden', role === 'personel');
+
+        if(role !== 'personel') {
+            const msg = document.getElementById('admin-msg');
+            if(role === 'yonetici') msg.innerHTML = "🛡️ <strong>Yönetici Paneli:</strong> Onayladığınız talepler İK'ya iletilir.";
+            else msg.innerHTML = "🏢 <strong>İK Paneli:</strong> Yöneticiden gelen talepleri sonuçlandırabilirsiniz.";
+            loadRequests('admin');
+        }
+    }
+
+    function calcDays() {
+        const s = document.getElementById('startDate').value;
+        const e = document.getElementById('endDate').value;
+        const p = document.getElementById('dayPreview');
+        if(s && e) {
+            const diff = new Date(e) - new Date(s);
+            const days = Math.ceil(diff / (1000*60*60*24)) + 1;
+            if(days > 0) {
+                p.innerText = days + " Gün";
+                p.style.color = "var(--primary)";
+                p.style.fontWeight = "bold";
+            } else {
+                p.innerText = "Hatalı Tarih";
+                p.style.color = "red";
+            }
+        }
+    }
+
+    function submitLeave(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmit');
+        const s = document.getElementById('startDate').value;
+        const e_date = document.getElementById('endDate').value;
+        const days = Math.ceil((new Date(e_date) - new Date(s)) / (1000*60*60*24)) + 1;
+
+        if(days <= 0) { alert("Tarihleri kontrol ediniz."); return; }
+
+        btn.disabled = true; btn.innerText = "Gönderiliyor...";
+
+        const data = {
+            action: 'create',
+            id: Date.now(),
+            name: document.getElementById('name').value.trim(),
+            project: document.getElementById('project').value,
+            start: s, end: e_date, days: days,
+            type: document.getElementById('type').value,
+            reason: document.getElementById('reason').value,
+            status: 'tl_bekliyor'
+        };
+
+        fetch(API_URL, { method: "POST", body: JSON.stringify(data) })
+        .then(() => {
+            alert("Talep başarıyla iletildi!");
+            document.getElementById('leaveForm').reset();
+            document.getElementById('dayPreview').innerText = "-";
+            btn.disabled = false; btn.innerText = "Talebi Gönder";
+        }).catch(err => { alert("Hata: " + err); btn.disabled = false; });
+    }
+
+    function loadRequests(mode) {
+        let fetchUrl = API_URL;
+        if (mode === 'personel') {
+            const nameVal = document.getElementById('name').value.trim();
+            if(!nameVal) { alert("Lütfen önce yukarıya Ad Soyad giriniz."); return; }
+            fetchUrl += "?name=" + encodeURIComponent(nameVal);
+            
+            const historyTable = document.getElementById('personelHistoryTable');
+            const tbody = document.getElementById('personelTbody');
+            historyTable.classList.remove('hidden');
+            tbody.innerHTML = '<tr><td colspan="2">Yükleniyor...</td></tr>';
+
+            fetch(fetchUrl).then(res => res.json()).then(data => {
+                tbody.innerHTML = '';
+                if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="2">Kayıt bulunamadı.</td></tr>'; return; }
+                data.reverse().forEach(req => {
+                    let extraInfo = "";
+                    if(req.status === 'red' && req.reject_reason) extraInfo = `<br><span class="reject-reason">Sebep: ${req.reject_reason}</span>`;
+                    if(req.approver) extraInfo += `<div class="audit-info">İşlem: ${req.approver}</div>`;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${formatDate(req.start)} <small>(${req.days} gün)</small></td>
+                            <td>
+                                <span class="status st-${req.status}">${getStatusName(req.status)}</span>
+                                ${extraInfo}
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+        } else {
+            const loader = document.getElementById('loader');
+            const tbody = document.getElementById('tableBody');
+            loader.classList.remove('hidden');
+            tbody.innerHTML = '';
+
+            fetch(API_URL).then(res => res.json()).then(data => {
+                loader.classList.add('hidden');
+                if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Talep yok.</td></tr>'; return; }
+                data.reverse().forEach(req => renderAdminRow(req, tbody));
+            });
+        }
+    }
+
+    function renderAdminRow(req, tbody) {
+        let actionHtml = '';
+        
+        if(currentRole === 'yonetici' && req.status === 'tl_bekliyor') {
+            actionHtml = `<button class="action-btn approve" onclick="updateStatus(${req.id}, 'ik_bekliyor')">✔ Onayla</button>
+                          <button class="action-btn reject" onclick="rejectRequest(${req.id})">✖ Red</button>`;
+        } else if(currentRole === 'ik' && req.status === 'ik_bekliyor') {
+            actionHtml = `<button class="action-btn approve" onclick="updateStatus(${req.id}, 'onaylandi')">✔ Bitir</button>
+                          <button class="action-btn reject" onclick="rejectRequest(${req.id})">✖ Red</button>`;
+        } else {
+            actionHtml = `<span class="status st-${req.status}">${getStatusName(req.status)}</span>`;
+        }
+
+        let details = "";
+        if(req.status === 'red' && req.reject_reason) {
+            details += `<span class="reject-reason">Red Nedeni: ${req.reject_reason}</span>`;
+        }
+        if(req.approver) {
+            details += `<div class="audit-info">İşlem Yapan: ${req.approver}</div>`;
+        }
+
+        const projectName = req.project ? req.project : "";
+
+        const row = `
+            <tr>
+                <td>
+                    <strong>${req.name}</strong><br>
+                    ${projectName ? `<span class="project-badge">${projectName}</span>` : ''}
+                </td>
+                <td>${formatDate(req.start)} <span class="day-badge">${req.days} Gün</span></td>
+                <td>
+                    ${req.type}<br>
+                    <small style="color:#64748b">"${req.reason}"</small>
+                </td>
+                <td>
+                    ${actionHtml}
+                    ${details}
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    }
+
+    function rejectRequest(id) {
+        let reason = prompt("Lütfen red sebebini giriniz:");
+        if(reason === null) return;
+        if(reason.trim() === "") { alert("Red sebebi boş bırakılamaz!"); return; }
+        updateStatus(id, 'red', reason);
+    }
+
+    function updateStatus(id, status, rejectReason = "") {
+        if(status !== 'red' && !confirm("Onaylıyor musunuz?")) return;
+        
+        document.getElementById('loader').classList.remove('hidden');
+        
+        const payload = { 
+            action: 'update', 
+            id: id, 
+            status: status,
+            approver: currentAdminName, 
+            rejectReason: rejectReason  
+        };
+
+        fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        }).then(() => {
+            loadRequests('admin');
+        });
+    }
+
+    function formatDate(d) {
+        if(!d) return "";
+        return d.split('-').reverse().join('.');
+    }
+
+    function getStatusName(s) {
+        const map = { 'tl_bekliyor': 'TL Onayı Bekliyor', 'ik_bekliyor': 'İK Onayı Bekliyor', 'onaylandi': 'Tamamlandı', 'red': 'Reddedildi' };
+        return map[s] || s;
+    }
+</script>
+
+</body>
+</html>
