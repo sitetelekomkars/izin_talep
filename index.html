@@ -9,6 +9,56 @@
     <style>
         :root { --primary: #2563eb; --bg: #f1f5f9; --ik-color: #7c3aed; --header-text: #1e293b; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        
+        /* ==============================
+           SAYFA GİRİŞ KİLİT EKRANI STİLİ
+           ============================== */
+        #page-lock-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .lock-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+        }
+        .lock-input {
+            width: 100%;
+            padding: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .lock-input:focus { border-color: var(--primary); outline: none; }
+        .lock-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .lock-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
+
+        /* ==============================
+           ANA UYGULAMA STİLLERİ
+           ============================== */
         .container { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
         /* Header ve Logo Alanı */
@@ -126,16 +176,26 @@
 </head>
 <body>
 
+<div id="page-lock-screen">
+    <div class="lock-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/2942/2942544.png" alt="Logo" style="height: 80px; margin-bottom: 20px;">
+        <h2 style="color: #1e293b; margin-bottom: 10px;">Site Telekom Portal</h2>
+        <p style="color: #64748b; margin-bottom: 20px;">Erişim için lütfen şifreyi giriniz.</p>
+        <input type="password" id="page-pass" class="lock-input" placeholder="Şifre" onkeyup="checkEnter(event)">
+        <button class="lock-btn" onclick="verifyPageAccess()">Giriş Yap</button>
+    </div>
+</div>
+
 <div id="maintenance-screen">
     <h1 style="font-size: 3em; margin-bottom: 10px;">🚧</h1>
     <h2 style="color: #1e293b;">Sistem Bakımda</h2>
     <p style="color: #64748b; font-size: 1.1em;">Şu an güncelleme çalışması yapılmaktadır.<br>Lütfen daha sonra tekrar deneyiniz.</p>
 </div>
 
-<div class="container" id="main-app">
+<div class="container" id="main-app" style="display: none;">
     
     <div class="header-area">
-        <img src="https://cdn-icons-png.flaticon.com/512/2942/2942544.png" alt="Site Telekom Logo" class="logo-img" id="companyLogo" id="companyLogo">
+        <img src="https://cdn-icons-png.flaticon.com/512/2942/2942544.png" alt="Site Telekom Logo" class="logo-img">
         <h2 class="header-title">İzin Yönetim Sistemi</h2>
     </div>
     
@@ -239,21 +299,53 @@
 
 <script>
     // ==========================================
-    // 🚧 BAKIM MODU AYARI (Açmak için false yap)
+    // 🔒 SAYFA GİRİŞ ŞİFRESİ AYARI
+    // ==========================================
+    const PAGE_PASSWORD = "ssport+";
+    
+    // ==========================================
+    // 🚧 BAKIM MODU AYARI (Açmak için true yap)
     // ==========================================
     const BAKIM_MODU = false; 
     // ==========================================
 
-    if (BAKIM_MODU) {
-        document.getElementById('main-app').style.display = 'none';
-        document.getElementById('maintenance-screen').style.display = 'block';
-        document.body.style.background = "#e2e8f0";
+    function checkEnter(e) {
+        if(e.key === "Enter") verifyPageAccess();
     }
+
+    function verifyPageAccess() {
+        const input = document.getElementById('page-pass').value;
+        if (input === PAGE_PASSWORD) {
+            // Şifre Doğru
+            document.getElementById('page-lock-screen').style.display = 'none'; // Kilidi kaldır
+            
+            if (BAKIM_MODU) {
+                // Bakım modu açıksa bakım ekranını göster
+                document.getElementById('maintenance-screen').style.display = 'block';
+                document.body.style.background = "#e2e8f0";
+            } else {
+                // Her şey normalse ana uygulamayı göster
+                document.getElementById('main-app').style.display = 'block';
+            }
+        } else {
+            // Şifre Yanlış
+            Swal.fire({
+                icon: 'error',
+                title: 'Hatalı Şifre',
+                text: 'Lütfen tekrar deneyiniz.',
+                confirmButtonColor: '#ef4444'
+            });
+        }
+    }
+
+    // ==========================================
+    // MEVCUT UYGULAMA KODLARI
+    // ==========================================
 
     const API_URL = "https://script.google.com/macros/s/AKfycby1QGB4lpO_VRt-PYCORj9DggoYvvwGPcSxGq4gTD9deYPpyNQr1bjMwncaKW6hGxgeSw/exec";
     
     const YONETICI_SIFRE = "36487"; 
-    const IK_SIFRE = "snn128936";       
+    const IK_SIFRE = "snn128936";        
 
     let currentRole = 'personel';
     let currentAdminName = '';
@@ -512,4 +604,3 @@
 
 </body>
 </html>
-
