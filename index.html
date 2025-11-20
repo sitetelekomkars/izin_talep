@@ -22,8 +22,9 @@
             padding-bottom: 15px;
         }
         .logo-img {
-            height: 50px; /* Logo yüksekliği */
+            height: 60px; 
             width: auto;
+            object-fit: contain;
         }
         .header-title {
             color: var(--header-text);
@@ -48,11 +49,13 @@
         button.submit-btn:hover { background: #1d4ed8; }
         button.submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
         
+        /* Admin Tablo Stilleri */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 0.95em; vertical-align: top; }
         th { background: #f8fafc; color: #64748b; text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; }
         tr:hover { background-color: #f8fafc; }
 
+        /* Durum Etiketleri */
         .status { padding: 5px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 800; display: inline-block; margin-bottom: 4px; letter-spacing: 0.5px; }
         .st-tl_bekliyor { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
         .st-ik_bekliyor { background: #f5f3ff; color: #6d28d9; border: 1px solid #ede9fe; }
@@ -69,20 +72,55 @@
         
         .hidden { display: none; }
         .loading { text-align: center; color: var(--primary); font-weight: bold; margin: 20px 0; }
-        
-        .audit-info { font-size: 0.8em; color: #64748b; margin-top: 4px; font-style: italic; display: flex; align-items: center; gap: 4px; }
-        .reject-reason { color: #ef4444; font-weight: bold; font-size: 0.85em; display: block; margin-top: 2px; background: #fee2e2; padding: 2px 6px; border-radius: 4px; width: fit-content;}
 
-        /* BAKIM MODU EKRANI STİLİ */
-        #maintenance-screen {
-            display: none;
-            text-align: center;
-            padding: 50px;
-            background: white;
-            max-width: 600px;
-            margin: 50px auto;
+        /* =========================================
+           YENİ KART TASARIMI (Geçmiş İzinler İçin)
+           ========================================= */
+        .history-list { display: flex; flex-direction: column; gap: 15px; }
+        
+        .history-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            border-left: 6px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .history-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+
+        /* Kart Renkleri */
+        .history-card.st-onaylandi { border-left-color: #22c55e; background: linear-gradient(to right, #f0fdf4, #fff); }
+        .history-card.st-red { border-left-color: #ef4444; background: linear-gradient(to right, #fef2f2, #fff); }
+        .history-card.st-tl_bekliyor { border-left-color: #f59e0b; }
+        .history-card.st-ik_bekliyor { border-left-color: #7c3aed; }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-date { font-weight: 700; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .card-days-pill { background: #e2e8f0; color: #475569; font-size: 0.75em; padding: 4px 10px; border-radius: 20px; }
+
+        .card-body { font-size: 1em; color: #475569; margin-bottom: 15px; line-height: 1.5; }
+        .card-type { color: #0f172a; font-weight: 600; }
+
+        .card-footer { 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-top: 1px solid #f1f5f9; padding-top: 12px; margin-top: 5px; font-size: 0.9em; 
+        }
+
+        .approver-badge { 
+            display: flex; align-items: center; gap: 6px; 
+            background: #fff; border: 1px solid #cbd5e1; 
+            padding: 5px 12px; border-radius: 30px; 
+            color: #334155; font-weight: 600; font-size: 0.85em;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        /* Bakım Modu */
+        #maintenance-screen {
+            display: none; text-align: center; padding: 50px;
+            background: white; max-width: 600px; margin: 50px auto;
+            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -97,7 +135,7 @@
 <div class="container" id="main-app">
     
     <div class="header-area">
-        <img src="https://cdn-icons-png.flaticon.com/512/2942/2942544.png" alt="Site Telekom Logo" class="logo-img" id="companyLogo">
+        <img src="https://www.sitetelekom.com.tr/tema/genel/uploads/logo/logo.png" alt="Site Telekom Logo" class="logo-img" id="companyLogo">
         <h2 class="header-title">İzin Yönetim Sistemi</h2>
     </div>
     
@@ -162,18 +200,11 @@
         </form>
 
         <div id="history-area" style="margin-top: 30px; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
-            <h4>📂 Geçmiş İzinlerim</h4>
-            <p style="font-size:0.9em; color:#64748b;">Yukarıya adınızı yazıp aşağıdaki butona basarak eski taleplerinizin durumunu görebilirsiniz.</p>
-            <button type="button" style="background:#475569; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="loadRequests('personel')">Geçmişimi Getir</button>
+            <h4 style="display:flex; align-items:center; gap:10px;">📂 Geçmiş İzinlerim</h4>
+            <p style="font-size:0.9em; color:#64748b;">Adınızı yazıp butona basarak eski taleplerinizin durumunu görebilirsiniz.</p>
+            <button type="button" style="background:#475569; color:white; border:none; padding:12px 25px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1em;" onclick="loadRequests('personel')">🔍 Geçmişimi Getir</button>
             
-            <div id="personelHistoryTable" class="hidden" style="margin-top:15px;">
-                <table style="font-size:0.9em;">
-                    <thead>
-                        <tr><th>Tarihler</th><th>Durum / Detay</th></tr>
-                    </thead>
-                    <tbody id="personelTbody"></tbody>
-                </table>
-            </div>
+            <div id="personelHistoryList" class="history-list hidden" style="margin-top:25px;"></div>
         </div>
     </div>
 
@@ -219,7 +250,6 @@
         document.body.style.background = "#e2e8f0";
     }
 
-    // GOOGLE SCRIPT LINKI
     const API_URL = "https://script.google.com/macros/s/AKfycby1QGB4lpO_VRt-PYCORj9DggoYvvwGPcSxGq4gTD9deYPpyNQr1bjMwncaKW6hGxgeSw/exec";
     
     const YONETICI_SIFRE = "36487"; 
@@ -228,34 +258,25 @@
     let currentRole = 'personel';
     let currentAdminName = '';
 
-    // LOGO DEĞİŞTİRME (İsteğe bağlı: Kendi resim linkini buraya yazabilirsin)
-    // document.getElementById('companyLogo').src = "https://site-telekom-logo-linki.png";
-
     async function switchRole(role) {
         currentAdminName = '';
         document.getElementById('activeAdminName').innerText = '';
 
-        // PERSONEL (Şifresiz)
         if (role === 'personel') {
             activateTab(role);
             return;
         }
 
-        // YÖNETİCİ ve İK (Şifreli & İsimli - SweetAlert ile)
         let targetPassword = (role === 'yonetici') ? YONETICI_SIFRE : IK_SIFRE;
         let roleTitle = (role === 'yonetici') ? 'Yönetici (TL) Girişi' : 'İK Girişi';
         let roleColor = (role === 'yonetici') ? '#f59e0b' : '#7c3aed';
 
-        // 1. ADIM: ŞİFRE SOR
         const { value: password } = await Swal.fire({
             title: roleTitle,
             text: 'Lütfen giriş şifresini giriniz',
             input: 'password',
             inputPlaceholder: 'Şifre',
-            inputAttributes: {
-                autocapitalize: 'off',
-                autocorrect: 'off'
-            },
+            inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
             confirmButtonText: 'Giriş Yap',
             confirmButtonColor: roleColor,
             showCancelButton: true,
@@ -263,19 +284,13 @@
             backdrop: `rgba(0,0,0,0.4)`
         });
 
-        if (!password) return; // İptal ederse çık
+        if (!password) return;
 
         if (password !== targetPassword) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Hatalı Şifre!',
-                text: 'Girdiğiniz şifre yanlış.',
-                confirmButtonColor: '#ef4444'
-            });
+            Swal.fire({ icon: 'error', title: 'Hatalı Şifre!', text: 'Girdiğiniz şifre yanlış.', confirmButtonColor: '#ef4444' });
             return;
         }
 
-        // 2. ADIM: İSİM SOR
         const { value: adminName } = await Swal.fire({
             title: 'Hoş Geldiniz',
             text: 'İşlem kaydı için lütfen Adınızı Soyadınızı giriniz:',
@@ -284,11 +299,7 @@
             confirmButtonText: 'Panele Git',
             confirmButtonColor: roleColor,
             allowOutsideClick: false,
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'İsim alanı boş bırakılamaz!'
-                }
-            }
+            inputValidator: (value) => { if (!value) { return 'İsim alanı boş bırakılamaz!' } }
         });
 
         if (adminName) {
@@ -300,10 +311,8 @@
 
     function activateTab(role) {
         currentRole = role;
-        
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.querySelector(`[data-role="${role}"]`).classList.add('active');
-
         document.getElementById('personel-panel').classList.toggle('hidden', role !== 'personel');
         document.getElementById('admin-panel').classList.toggle('hidden', role === 'personel');
 
@@ -312,8 +321,7 @@
             if(role === 'yonetici') {
                 msg.innerHTML = "🛡️ <strong>Yönetici Paneli:</strong> Onayladığınız talepler İK'ya iletilir.";
                 msg.style.background = "#fff7ed"; msg.style.color = "#c2410c";
-            }
-            else {
+            } else {
                 msg.innerHTML = "🏢 <strong>İK Paneli:</strong> Yöneticiden gelen talepleri sonuçlandırabilirsiniz.";
                 msg.style.background = "#f5f3ff"; msg.style.color = "#6d28d9";
             }
@@ -346,10 +354,7 @@
         const e_date = document.getElementById('endDate').value;
         const days = Math.ceil((new Date(e_date) - new Date(s)) / (1000*60*60*24)) + 1;
 
-        if(days <= 0) { 
-            Swal.fire('Hata', 'Bitiş tarihi başlangıçtan önce olamaz.', 'error');
-            return; 
-        }
+        if(days <= 0) { Swal.fire('Hata', 'Bitiş tarihi başlangıçtan önce olamaz.', 'error'); return; }
 
         btn.disabled = true; btn.innerText = "Gönderiliyor...";
 
@@ -366,20 +371,11 @@
 
         fetch(API_URL, { method: "POST", body: JSON.stringify(data) })
         .then(() => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Başarılı!',
-                text: 'İzin talebiniz yönetici onayına gönderildi.',
-                timer: 3000,
-                showConfirmButton: false
-            });
+            Swal.fire({ icon: 'success', title: 'Başarılı!', text: 'İzin talebiniz yönetici onayına gönderildi.', timer: 3000, showConfirmButton: false });
             document.getElementById('leaveForm').reset();
             document.getElementById('dayPreview').innerText = "-";
             btn.disabled = false; btn.innerText = "Talebi Gönder";
-        }).catch(err => { 
-            Swal.fire('Hata', 'Sunucu hatası: ' + err, 'error');
-            btn.disabled = false; 
-        });
+        }).catch(err => { Swal.fire('Hata', 'Sunucu hatası: ' + err, 'error'); btn.disabled = false; });
     }
 
     function loadRequests(mode) {
@@ -389,28 +385,43 @@
             if(!nameVal) { Swal.fire('Uyarı','Lütfen önce yukarıya Ad Soyad giriniz.','warning'); return; }
             fetchUrl += "?name=" + encodeURIComponent(nameVal);
             
-            const historyTable = document.getElementById('personelHistoryTable');
-            const tbody = document.getElementById('personelTbody');
-            historyTable.classList.remove('hidden');
-            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px;">⏳ Yükleniyor...</td></tr>';
+            const listContainer = document.getElementById('personelHistoryList');
+            listContainer.classList.remove('hidden');
+            listContainer.innerHTML = '<div style="text-align:center; padding:20px; font-size:1.2em;">⏳ Geçmiş Yükleniyor...</div>';
 
             fetch(fetchUrl).then(res => res.json()).then(data => {
-                tbody.innerHTML = '';
-                if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:10px; color:#94a3b8;">Kayıt bulunamadı.</td></tr>'; return; }
+                listContainer.innerHTML = '';
+                if(data.length === 0) { listContainer.innerHTML = '<div style="text-align:center; padding:10px; color:#94a3b8;">Kayıt bulunamadı.</div>'; return; }
+                
                 data.reverse().forEach(req => {
-                    let extraInfo = "";
-                    if(req.status === 'red' && req.reject_reason) extraInfo = `<br><span class="reject-reason">Sebep: ${req.reject_reason}</span>`;
-                    if(req.approver) extraInfo += `<div class="audit-info">📝 İşlem: ${req.approver}</div>`;
+                    let footerContent = "";
+                    if(req.status === 'red') {
+                        footerContent = `<span style="color:#ef4444; font-weight:bold;">🛑 Red Sebebi: ${req.reject_reason || '-'}</span>`;
+                    } else if (req.approver) {
+                        footerContent = `<div class="approver-badge"><span style="color:#22c55e">✔</span> Onaylayan: ${req.approver}</div>`;
+                    } else {
+                        footerContent = `<span style="color:#f59e0b; font-style:italic;">⏳ İşlem Bekleniyor</span>`;
+                    }
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${formatDate(req.start)} <small>(${req.days} gün)</small></td>
-                            <td>
-                                <span class="status st-${req.status}">${getStatusName(req.status)}</span>
-                                ${extraInfo}
-                            </td>
-                        </tr>
+                    const cardHtml = `
+                        <div class="history-card st-${req.status}">
+                            <div class="card-header">
+                                <div class="card-date">
+                                    📅 ${formatDate(req.start)} - ${formatDate(req.end)}
+                                    <span class="card-days-pill">${req.days} Gün</span>
+                                </div>
+                                <div class="status st-${req.status}">${getStatusName(req.status)}</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-type">${req.type}</div>
+                                <div>${req.reason}</div>
+                            </div>
+                            <div class="card-footer">
+                                ${footerContent}
+                            </div>
+                        </div>
                     `;
+                    listContainer.innerHTML += cardHtml;
                 });
             });
         } else {
@@ -429,7 +440,6 @@
 
     function renderAdminRow(req, tbody) {
         let actionHtml = '';
-        
         if(currentRole === 'yonetici' && req.status === 'tl_bekliyor') {
             actionHtml = `<button class="action-btn approve" onclick="updateStatus(${req.id}, 'ik_bekliyor')" title="Onayla">✔</button>
                           <button class="action-btn reject" onclick="rejectRequest(${req.id})" title="Reddet">✖</button>`;
@@ -441,30 +451,17 @@
         }
 
         let details = "";
-        if(req.status === 'red' && req.reject_reason) {
-            details += `<span class="reject-reason">Red Nedeni: ${req.reject_reason}</span>`;
-        }
-        if(req.approver) {
-            details += `<div class="audit-info">📝 ${req.approver}</div>`;
-        }
+        if(req.status === 'red' && req.reject_reason) { details += `<span class="reject-reason">Red Nedeni: ${req.reject_reason}</span>`; }
+        if(req.approver) { details += `<div class="audit-info">📝 ${req.approver}</div>`; }
 
         const projectName = req.project ? req.project : "";
 
         const row = `
             <tr>
-                <td>
-                    <strong style="color:#1e293b;">${req.name}</strong><br>
-                    ${projectName ? `<span class="project-badge">${projectName}</span>` : ''}
-                </td>
+                <td><strong style="color:#1e293b;">${req.name}</strong><br>${projectName ? `<span class="project-badge">${projectName}</span>` : ''}</td>
                 <td>${formatDate(req.start)} <span class="day-badge">${req.days} G</span></td>
-                <td>
-                    ${req.type}<br>
-                    <small style="color:#64748b; font-style:italic;">"${req.reason}"</small>
-                </td>
-                <td>
-                    ${actionHtml}
-                    ${details}
-                </td>
+                <td>${req.type}<br><small style="color:#64748b; font-style:italic;">"${req.reason}"</small></td>
+                <td>${actionHtml}${details}</td>
             </tr>
         `;
         tbody.innerHTML += row;
@@ -472,70 +469,39 @@
 
     async function rejectRequest(id) {
         const { value: reason } = await Swal.fire({
-            title: 'Reddetme Sebebi',
-            input: 'text',
-            inputLabel: 'Lütfen red sebebini giriniz:',
-            inputPlaceholder: 'Örn: Yoğunluk nedeniyle...',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            confirmButtonText: 'Reddet',
-            cancelButtonText: 'İptal',
-            inputValidator: (value) => {
-                if (!value) { return 'Sebep yazmanız gerekmektedir!' }
-            }
+            title: 'Reddetme Sebebi', input: 'text', inputLabel: 'Lütfen red sebebini giriniz:',
+            inputPlaceholder: 'Örn: Yoğunluk nedeniyle...', showCancelButton: true,
+            confirmButtonColor: '#ef4444', confirmButtonText: 'Reddet', cancelButtonText: 'İptal',
+            inputValidator: (value) => { if (!value) { return 'Sebep yazmanız gerekmektedir!' } }
         });
-
-        if (reason) {
-            updateStatus(id, 'red', reason);
-        }
+        if (reason) { updateStatus(id, 'red', reason); }
     }
 
     function updateStatus(id, status, rejectReason = "") {
-        // Onaylama için de ufak bir teyit soralım (Red için zaten yukarıda sorduk)
         if(status !== 'red') {
              Swal.fire({
-                title: 'Emin misiniz?',
-                text: "Bu işlemi onaylıyor musunuz?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#22c55e',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Evet, Onayla',
-                cancelButtonText: 'Vazgeç'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    executeStatusUpdate(id, status, rejectReason);
-                }
-            });
-        } else {
-            executeStatusUpdate(id, status, rejectReason);
-        }
+                title: 'Emin misiniz?', text: "Bu işlemi onaylıyor musunuz?", icon: 'question',
+                showCancelButton: true, confirmButtonColor: '#22c55e', cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, Onayla', cancelButtonText: 'Vazgeç'
+            }).then((result) => { if (result.isConfirmed) { executeStatusUpdate(id, status, rejectReason); } });
+        } else { executeStatusUpdate(id, status, rejectReason); }
     }
 
     function executeStatusUpdate(id, status, rejectReason) {
         document.getElementById('loader').classList.remove('hidden');
-        
-        const payload = { 
-            action: 'update', 
-            id: id, 
-            status: status,
-            approver: currentAdminName, 
-            rejectReason: rejectReason  
-        };
-
-        fetch(API_URL, {
-            method: "POST",
-            body: JSON.stringify(payload)
-        }).then(() => {
+        const payload = { action: 'update', id: id, status: status, approver: currentAdminName, rejectReason: rejectReason };
+        fetch(API_URL, { method: "POST", body: JSON.stringify(payload) }).then(() => {
             loadRequests('admin');
             const msg = status === 'red' ? 'Talep reddedildi.' : 'İşlem başarıyla tamamlandı.';
             Swal.fire('Tamamlandı!', msg, 'success');
         });
     }
 
-    function formatDate(d) {
-        if(!d) return "";
-        return d.split('-').reverse().join('.');
+    function formatDate(dateString) {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) { return dateString.split('-').reverse().join('.'); }
+        return date.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
     }
 
     function getStatusName(s) {
