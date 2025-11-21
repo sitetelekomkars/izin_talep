@@ -544,7 +544,15 @@
                 data.reverse().forEach(req => {
                     let footerContent = "";
                     if(req.status === 'red') {
-                        footerContent = `<span style="color:#ef4444; font-weight:bold;">🛑 Red Sebebi: ${req.reject_reason || '-'}</span>`;
+                        // BURASI DEĞİŞTİRİLDİ: Reddeden kişi bilgisi eklendi
+                        footerContent = `
+                            <div style="display:flex; flex-direction:column; gap:5px; width:100%;">
+                                <span style="color:#ef4444; font-weight:bold;">🛑 Red Sebebi: ${req.reject_reason || '-'}</span>
+                                <div class="approver-badge" style="border-color:#fee2e2; background:#fef2f2; color:#b91c1c;">
+                                    👤 Red Eden: ${req.approver || 'Yönetici'}
+                                </div>
+                            </div>
+                        `;
                     } else if (req.approver) {
                         footerContent = `<div class="approver-badge"><span style="color:#22c55e">✔</span> Onaylayan: ${req.approver}</div>`;
                     } else {
@@ -581,16 +589,11 @@
             fetch(API_URL).then(res => res.json()).then(data => {
                 loader.classList.add('hidden');
                 
-                // ==========================================
-                // 🎯 FİLTRELEME MANTIĞI BURADA
-                // ==========================================
                 let filteredData = data;
 
-                // Eğer giriş yapan YÖNETİCİ ise, sadece kendi projesini görsün
                 if (currentRole === 'yonetici' && currentAdminProject) {
                     filteredData = data.filter(req => req.project === currentAdminProject);
                 }
-                // İK ise filtreleme yapma (hepsini görsün)
 
                 if(filteredData.length === 0) { 
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Bu projede bekleyen talep yok.</td></tr>'; 
