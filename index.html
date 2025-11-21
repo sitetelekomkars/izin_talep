@@ -8,7 +8,7 @@
     
     <style>
         :root { --primary: #2563eb; --bg: #f1f5f9; --ik-color: #7c3aed; --header-text: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; user-select: none; /* Metin seçimi engelleme */ }
         
         /* ==============================
            SAYFA GİRİŞ KİLİT EKRANI STİLİ
@@ -62,7 +62,6 @@
            ============================== */
         .container { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
-        /* Header ve Logo Alanı */
         .header-area {
             display: flex;
             align-items: center;
@@ -72,18 +71,9 @@
             border-bottom: 2px solid #f1f5f9;
             padding-bottom: 15px;
         }
-        .logo-img {
-            height: 60px; 
-            width: auto;
-            object-fit: contain;
-        }
-        .header-title {
-            color: var(--header-text);
-            margin: 0;
-            font-size: 1.8em;
-        }
+        .logo-img { height: 60px; width: auto; object-fit: contain; }
+        .header-title { color: var(--header-text); margin: 0; font-size: 1.8em; }
 
-        /* Navigasyon */
         .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; padding-bottom: 10px; }
         .nav-btn { flex: 1; padding: 15px; border: none; background: #e2e8f0; color: #64748b; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 1em; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .nav-btn:hover { opacity: 0.9; transform: translateY(-2px); }
@@ -100,13 +90,11 @@
         button.submit-btn:hover { background: #1d4ed8; }
         button.submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
         
-        /* Admin Tablo Stilleri */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 0.95em; vertical-align: top; }
         th { background: #f8fafc; color: #64748b; text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; }
         tr:hover { background-color: #f8fafc; }
 
-        /* Durum Etiketleri */
         .status { padding: 5px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 800; display: inline-block; margin-bottom: 4px; letter-spacing: 0.5px; }
         .st-tl_bekliyor { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
         .st-ik_bekliyor { background: #f5f3ff; color: #6d28d9; border: 1px solid #ede9fe; }
@@ -124,24 +112,15 @@
         .hidden { display: none; }
         .loading { text-align: center; color: var(--primary); font-weight: bold; margin: 20px 0; }
 
-        /* =========================================
-           YENİ KART TASARIMI (Geçmiş İzinler İçin)
-           ========================================= */
         .history-list { display: flex; flex-direction: column; gap: 15px; }
         
         .history-card {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            border-left: 6px solid #ccc;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            transition: all 0.3s ease;
-            position: relative;
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;
+            border-left: 6px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            transition: all 0.3s ease; position: relative;
         }
         .history-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
 
-        /* Kart Renkleri */
         .history-card.st-onaylandi { border-left-color: #22c55e; background: linear-gradient(to right, #f0fdf4, #fff); }
         .history-card.st-red { border-left-color: #ef4444; background: linear-gradient(to right, #fef2f2, #fff); }
         .history-card.st-tl_bekliyor { border-left-color: #f59e0b; }
@@ -150,24 +129,11 @@
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .card-date { font-weight: 700; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
         .card-days-pill { background: #e2e8f0; color: #475569; font-size: 0.75em; padding: 4px 10px; border-radius: 20px; }
-
         .card-body { font-size: 1em; color: #475569; margin-bottom: 15px; line-height: 1.5; }
         .card-type { color: #0f172a; font-weight: 600; }
-
-        .card-footer { 
-            display: flex; justify-content: space-between; align-items: center; 
-            border-top: 1px solid #f1f5f9; padding-top: 12px; margin-top: 5px; font-size: 0.9em; 
-        }
-
-        .approver-badge { 
-            display: flex; align-items: center; gap: 6px; 
-            background: #fff; border: 1px solid #cbd5e1; 
-            padding: 5px 12px; border-radius: 30px; 
-            color: #334155; font-weight: 600; font-size: 0.85em;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 12px; margin-top: 5px; font-size: 0.9em; }
+        .approver-badge { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #cbd5e1; padding: 5px 12px; border-radius: 30px; color: #334155; font-weight: 600; font-size: 0.85em; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         
-        /* Bakım Modu */
         #maintenance-screen {
             display: none; text-align: center; padding: 50px;
             background: white; max-width: 600px; margin: 50px auto;
@@ -303,42 +269,61 @@
 
 <script>
     // ==========================================
-    // 🔒 SAYFA GİRİŞ ŞİFRESİ AYARI
+    // 🔒 GÜVENLİK VE ŞİFRELEME AYARLARI
     // ==========================================
-    const PAGE_PASSWORD = "3636";
     
-    // ==========================================
-    // 🚧 BAKIM MODU AYARI (Açmak için true yap)
-    // ==========================================
-    const BAKIM_MODU = false; 
-    // ==========================================
+    // 1. SAĞ TIK VE F12 ENGELLEME (Basit Koruma)
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.onkeydown = function(e) {
+        if(e.keyCode == 123) { return false; } // F12
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)){ return false; } // Ctrl+Shift+I
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)){ return false; } // Ctrl+Shift+J
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)){ return false; } // Ctrl+U
+    }
 
+    // 2. HASH FONKSİYONU (Şifreyi sayıya çevirir)
+    function simpleHash(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = (hash << 5) - hash + char;
+            hash |= 0; // 32bit integera çevir
+        }
+        return hash.toString();
+    }
+
+    // ==========================================
+    // 🔑 GİZLENMİŞ ŞİFRELER (Hash Kodları)
+    // ==========================================
+    // 3636      -> "1600896"
+    // 36487     -> "47637409"
+    // snn128936 -> "3525003912"
+    
+    const PAGE_HASH = "1600896";        // Site Giriş Şifresi (3636)
+    const YONETICI_HASH = "47637409";   // Yönetici Şifresi (36487)
+    const IK_HASH = "3525003912";       // İK Şifresi (snn128936)
+
+    const BAKIM_MODU = false; 
+
+    // ==========================================
+    
     function checkEnter(e) {
         if(e.key === "Enter") verifyPageAccess();
     }
 
     function verifyPageAccess() {
         const input = document.getElementById('page-pass').value;
-        if (input === PAGE_PASSWORD) {
-            // Şifre Doğru
-            document.getElementById('page-lock-screen').style.display = 'none'; // Kilidi kaldır
-            
+        // Girilen şifreyi hashle ve kayıtlı hash ile karşılaştır
+        if (simpleHash(input) === PAGE_HASH) {
+            document.getElementById('page-lock-screen').style.display = 'none'; 
             if (BAKIM_MODU) {
-                // Bakım modu açıksa bakım ekranını göster
                 document.getElementById('maintenance-screen').style.display = 'block';
                 document.body.style.background = "#e2e8f0";
             } else {
-                // Her şey normalse ana uygulamayı göster
                 document.getElementById('main-app').style.display = 'block';
             }
         } else {
-            // Şifre Yanlış
-            Swal.fire({
-                icon: 'error',
-                title: 'Hatalı Şifre',
-                text: 'Lütfen tekrar deneyiniz.',
-                confirmButtonColor: '#ef4444'
-            });
+            Swal.fire({ icon: 'error', title: 'Hatalı Şifre', text: 'Lütfen tekrar deneyiniz.', confirmButtonColor: '#ef4444' });
         }
     }
 
@@ -348,12 +333,9 @@
 
     const API_URL = "https://script.google.com/macros/s/AKfycby1QGB4lpO_VRt-PYCORj9DggoYvvwGPcSxGq4gTD9deYPpyNQr1bjMwncaKW6hGxgeSw/exec";
     
-    const YONETICI_SIFRE = "36487"; 
-    const IK_SIFRE = "snn128936";        
-
     let currentRole = 'personel';
     let currentAdminName = '';
-    let currentAdminProject = ''; // Yönetici projesini tutacak değişken
+    let currentAdminProject = ''; 
 
     async function switchRole(role) {
         currentAdminName = '';
@@ -366,11 +348,10 @@
             return;
         }
 
-        let targetPassword = (role === 'yonetici') ? YONETICI_SIFRE : IK_SIFRE;
+        let targetHash = (role === 'yonetici') ? YONETICI_HASH : IK_HASH;
         let roleTitle = (role === 'yonetici') ? 'Yönetici (TL) Girişi' : 'İK Girişi';
         let roleColor = (role === 'yonetici') ? '#f59e0b' : '#7c3aed';
 
-        // 1. ADIM: ŞİFRE KONTROLÜ
         const { value: password } = await Swal.fire({
             title: roleTitle,
             text: 'Lütfen giriş şifresini giriniz',
@@ -385,21 +366,18 @@
 
         if (!password) return;
 
-        if (password !== targetPassword) {
+        // BURADA GİRİLEN ŞİFREYİ HASHLEYİP KONTROL EDİYORUZ
+        if (simpleHash(password) !== targetHash) {
             Swal.fire({ icon: 'error', title: 'Hatalı Şifre!', text: 'Girdiğiniz şifre yanlış.', confirmButtonColor: '#ef4444' });
             return;
         }
 
-        // 2. ADIM: BİLGİ FORMU (AD, SOYAD, PROJE)
-        // TL için proje seçimi zorunlu, İK için opsiyonel veya hepsi olabilir.
-        // Burada TL için özel form yapısı kuruyoruz.
-        
+        // 2. ADIM: BİLGİ FORMU
         let htmlContent = `
             <input id="swal-name" class="swal2-input" placeholder="Adınız">
             <input id="swal-surname" class="swal2-input" placeholder="Soyadınız">
         `;
 
-        // Sadece yönetici ise Proje seçimi ekle
         if (role === 'yonetici') {
             htmlContent += `
                 <select id="swal-project" class="swal2-select" style="display:flex; width:80%; margin: 10px auto;">
@@ -442,8 +420,8 @@
         });
 
         if (formValues) {
-            currentAdminName = `${formValues.name} ${formValues.surname}`; // Ad Soyad birleştir
-            currentAdminProject = formValues.project; // Projeyi kaydet
+            currentAdminName = `${formValues.name} ${formValues.surname}`; 
+            currentAdminProject = formValues.project; 
             
             document.getElementById('activeAdminName').innerText = currentAdminName;
             
@@ -544,7 +522,6 @@
                 data.reverse().forEach(req => {
                     let footerContent = "";
                     if(req.status === 'red') {
-                        // BURASI DEĞİŞTİRİLDİ: Reddeden kişi bilgisi eklendi
                         footerContent = `
                             <div style="display:flex; flex-direction:column; gap:5px; width:100%;">
                                 <span style="color:#ef4444; font-weight:bold;">🛑 Red Sebebi: ${req.reject_reason || '-'}</span>
