@@ -3,429 +3,538 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S Sport Plus - Temsilci Bilgi Merkezi</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>İzin Talep Portalı (Site Telekom)</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
-        /* === GENEL AYARLAR === */
-        :root {
-            --primary: #0e1b42; 
-            --secondary: #fabb00; 
-            --bg: #f0f2f5;
-            --card-bg: #ffffff;
-            --accent: #d32f2f; 
-            --success: #2e7d32; 
-            --info: #0288d1; 
-            --warning: #ed6c02; 
+        :root { --primary: #2563eb; --bg: #f1f5f9; --ik-color: #7c3aed; --header-text: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; user-select: none; }
+        
+        /* ==============================
+           SAYFA GİRİŞ KİLİT EKRANI
+           ============================== */
+        #page-lock-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #f1f5f9; display: flex; justify-content: center; align-items: center; z-index: 9999;
         }
-
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: #333; user-select: none; }
-
-        /* GİRİŞ VE BAKIM EKRANLARI */
-        #login-screen, #maintenance-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; display: flex; justify-content: center; align-items: center; }
-        #login-screen { background: linear-gradient(135deg, #0e1b42 0%, #1a2f6e 100%); }
-        #maintenance-screen { background: #f4f6f9; display: none; flex-direction: column; text-align: center; z-index: 2000; }
-        
-        .login-card { background: white; padding: 40px; border-radius: 15px; text-align: center; width: 300px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .login-input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 8px; text-align: center; box-sizing: border-box; }
-        .login-btn { width: 100%; padding: 12px; background: #fabb00; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .maintenance-content { background: white; padding: 50px; border-radius: 20px; max-width: 600px; }
-
-        /* ANA UYGULAMA */
-        #main-app { display: none; }
-        .header { background: linear-gradient(135deg, var(--primary) 0%, #1a2f6e 100%); color: white; padding: 20px 30px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        
-        .developer-badge {
-            position: absolute; top: 20px; right: 30px;
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 15px; border-radius: 20px; color: #fff; font-size: 0.85rem;
-            backdrop-filter: blur(5px); display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        .lock-card {
+            background: white; padding: 40px; border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 100%; max-width: 350px;
         }
+        .lock-input {
+            width: 100%; padding: 15px; margin: 20px 0;
+            border: 2px solid #e2e8f0; border-radius: 10px;
+            font-size: 1.1em; text-align: center; transition: 0.3s; box-sizing: border-box;
+        }
+        .lock-input:focus { border-color: var(--primary); outline: none; }
+        .lock-btn {
+            width: 100%; padding: 15px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-size: 1.1em; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+        }
+        .lock-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
 
-        .search-container { position: relative; max-width: 800px; margin: 0 auto; }
-        #searchInput { width: 100%; padding: 12px 20px 12px 45px; border-radius: 8px; border: none; box-sizing: border-box; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #666; }
+        /* ==============================
+           ANA UYGULAMA STİLLERİ
+           ============================== */
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header-area { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
+        .logo-img { height: 60px; width: auto; object-fit: contain; }
+        .header-title { color: var(--header-text); margin: 0; font-size: 1.8em; }
 
-        .filter-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
-        .filter-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
-        .filter-btn.active { background: var(--secondary); color: var(--primary); font-weight: 600; border-color: var(--secondary); }
-        .filter-btn:hover { background: rgba(255,255,255,0.3); }
+        .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; padding-bottom: 10px; }
+        .nav-btn { flex: 1; padding: 15px; border: none; background: #e2e8f0; color: #64748b; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 1em; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .nav-btn.active[data-role="personel"] { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .nav-btn.active[data-role="yonetici"] { background: #f59e0b; color: white; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+        .nav-btn.active[data-role="ik"] { background: var(--ik-color); color: white; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3); }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; color: #334155; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1em; transition: 0.3s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        button.submit-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; transition: 0.3s; }
+        button.submit-btn:hover { background: #1d4ed8; }
+        button.submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
         
-        .wizard-btn { background: linear-gradient(45deg, #d32f2f, #c62828); border: none; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4); animation: pulse 2s infinite; font-weight: bold; }
-        .guide-btn { background: linear-gradient(45deg, #0288d1, #01579b); border: none; font-weight: bold; }
-        .news-btn { background: linear-gradient(45deg, #ff6f00, #ff8f00); border: none; font-weight: bold; animation: pulse 3s infinite; }
-        .link-btn { background: rgba(255,255,255,0.2); border: 1px solid white; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 0.95em; vertical-align: top; }
+        th { background: #f8fafc; color: #64748b; text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; }
+        tr:hover { background-color: #f8fafc; }
 
-        /* KARTLAR */
-        .container { padding: 20px; max-width: 1600px; margin: 0 auto; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border-left: 5px solid var(--info); display: flex; flex-direction: column; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .status { padding: 5px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 800; display: inline-block; margin-bottom: 4px; letter-spacing: 0.5px; }
+        .st-tl_bekliyor { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+        .st-ik_bekliyor { background: #f5f3ff; color: #6d28d9; border: 1px solid #ede9fe; }
+        .st-onaylandi { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; }
+        .st-red { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
+        .day-badge { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold; margin-left: 5px; }
+        .project-badge { background: #334155; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; margin-left: 5px; }
+        .action-btn { padding: 6px 12px; margin-right: 5px; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 0.9em; transition: 0.2s; }
+        .action-btn:hover { transform: scale(1.05); }
+        .approve { background: #22c55e; } 
+        .reject { background: #ef4444; }
+        .hidden { display: none; }
+        .loading { text-align: center; color: var(--primary); font-weight: bold; margin: 20px 0; }
+
+        .history-list { display: flex; flex-direction: column; gap: 15px; }
+        .history-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; border-left: 6px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.03); transition: all 0.3s ease; position: relative; }
+        .history-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .history-card.st-onaylandi { border-left-color: #22c55e; background: linear-gradient(to right, #f0fdf4, #fff); }
+        .history-card.st-red { border-left-color: #ef4444; background: linear-gradient(to right, #fef2f2, #fff); }
+        .history-card.st-tl_bekliyor { border-left-color: #f59e0b; }
+        .history-card.st-ik_bekliyor { border-left-color: #7c3aed; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-date { font-weight: 700; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .card-days-pill { background: #e2e8f0; color: #475569; font-size: 0.75em; padding: 4px 10px; border-radius: 20px; }
+        .card-body { font-size: 1em; color: #475569; margin-bottom: 15px; line-height: 1.5; }
+        .card-type { color: #0f172a; font-weight: 600; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 12px; margin-top: 5px; font-size: 0.9em; }
+        .approver-badge { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #cbd5e1; padding: 5px 12px; border-radius: 30px; color: #334155; font-weight: 600; font-size: 0.85em; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         
-        .card.teknik { border-left-color: var(--primary); }
-        .card.iade { border-left-color: var(--accent); }
-        .card.ikna { border-left-color: var(--warning); }
-        .card.kampanya { border-left-color: var(--success); }
-        .card.bilgi { border-left-color: var(--info); }
-        
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .card-title { font-weight: 700; font-size: 1.1rem; margin: 0; color: #2c3e50; line-height: 1.4; }
-        .badge { font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; background: #eee; text-transform: uppercase; font-weight: 600; }
-        
-        .card-content { font-size: 0.95rem; color: #555; margin-bottom: 15px; line-height: 1.5; flex-grow: 1; }
-        .script-box { background: #fffdeb; border: 1px solid #f0e68c; padding: 12px; border-radius: 8px; font-style: italic; color: #444; margin-top: auto; position: relative; font-size: 0.92rem; }
-        .script-box::before { content: '\f10d'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; top: -8px; left: 10px; background: #fffdeb; padding: 0 5px; color: #f0e68c; font-size: 0.8rem; }
-
-        .card-actions { margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px; }
-        .btn { padding: 6px 12px; border-radius: 6px; cursor: pointer; border: none; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 5px; }
-        .btn-copy { background: var(--primary); color: white; }
-        .btn-link { background: transparent; border: 1px solid var(--info); color: var(--info); text-decoration: none; }
-        .btn-link:hover { background: #e1f5fe; }
-
-        /* MODAL GENEL */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5000; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 90%; max-width: 800px; border-radius: 15px; padding: 30px; position: relative; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #666; font-weight: bold; }
-        
-        /* DUYURULAR TIMELINE */
-        .news-item { border-left: 4px solid var(--secondary); padding-left: 15px; margin-bottom: 20px; position: relative; }
-        .news-item::before { content: ''; position: absolute; left: -9px; top: 0; width: 14px; height: 14px; background: var(--secondary); border-radius: 50%; }
-        .news-date { font-size: 0.85rem; color: #999; font-weight: bold; margin-bottom: 5px; display: block; }
-        .news-title { font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; display: block; }
-        .news-desc { color: #555; line-height: 1.5; }
-        .news-tag { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-top: 5px; font-weight: bold; }
-        .tag-fix { background: #e8f5e9; color: #2e7d32; } 
-        .tag-update { background: #fff3e0; color: #ef6c00; } 
-        .tag-info { background: #e3f2fd; color: #0277bd; }
-
-        /* DİĞER MODAL STİLLERİ (İADE & SPOR) */
-        .wizard-step h2 { color: var(--primary); margin-bottom: 10px; text-align: center;}
-        .wizard-options { display: flex; flex-direction: column; gap: 10px; }
-        .option-btn { padding: 15px; border: 2px solid #eee; border-radius: 10px; background: white; font-size: 1rem; cursor: pointer; transition: 0.2s; text-align: left; display: flex; align-items: center; gap: 10px; }
-        .option-btn:hover { border-color: var(--primary); background: #f0f4ff; }
-        .result-box { padding: 20px; border-radius: 10px; margin-top: 20px; text-align: center; }
-        .res-red { background: #ffebee; border: 2px solid #ef5350; color: #c62828; }
-        .res-green { background: #e8f5e9; border: 2px solid #66bb6a; color: #2e7d32; }
-        .res-yellow { background: #fff8e1; border: 2px solid #ffca28; color: #f57f17; }
-        .restart-btn { margin-top: 20px; background: #555; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-
-        .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
-        .guide-item { border: 1px solid #eee; border-radius: 10px; padding: 15px; text-align: center; transition: 0.3s; background: #f8f9fa; }
-        .guide-item:hover { transform: translateY(-5px); border-color: var(--secondary); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .guide-icon { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
-        .guide-title { font-weight: bold; color: var(--primary); margin-bottom: 5px; display: block; font-size: 1.1rem; }
-        .guide-desc { font-size: 0.9rem; color: #666; margin-bottom: 10px; min-height: 40px; font-style: italic;}
-        .guide-tip { background: #e3f2fd; color: #0277bd; padding: 5px; border-radius: 5px; font-size: 0.8rem; font-weight: 600; }
-
-        .highlight { background-color: yellow; font-weight: bold; }
+        #maintenance-screen { display: none; text-align: center; padding: 50px; background: white; max-width: 600px; margin: 50px auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-card">
-            <i class="fas fa-lock fa-3x" style="color: #0e1b42;"></i>
-            <h2>S Sport Plus</h2>
-            <p>Temsilci Girişi</p>
-            <input type="password" id="passInput" class="login-input" placeholder="Şifre" onkeyup="enterBas(event)">
-            <button class="login-btn" onclick="girisYap()">Giriş Yap</button>
-            <p id="error-msg" style="color:red; display:none;">Hatalı Şifre!</p>
-        </div>
+<div id="page-lock-screen">
+    <div class="lock-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/2942/2942544.png" alt="Logo" style="height: 80px; margin-bottom: 20px;">
+        <h2 style="color: #1e293b; margin-bottom: 10px;">Site Telekom Portal</h2>
+        <p style="color: #64748b; margin-bottom: 20px;">Erişim için lütfen şifreyi giriniz.</p>
+        <input type="password" id="page-pass" class="lock-input" placeholder="Şifre" onkeyup="checkEnter(event)">
+        <button class="lock-btn" onclick="verifyPageAccess()">Giriş Yap</button>
+    </div>
+</div>
+
+<div id="maintenance-screen">
+    <h1 style="font-size: 3em; margin-bottom: 10px;">🚧</h1>
+    <h2 style="color: #1e293b;">Sistem Bakımda</h2>
+    <p style="color: #64748b; font-size: 1.1em;">Şu an güncelleme çalışması yapılmaktadır.<br>Lütfen daha sonra tekrar deneyiniz.</p>
+</div>
+
+<div class="container" id="main-app" style="display: none;">
+    <div class="header-area">
+        <img src="https://cdn-icons-png.flaticon.com/512/2942/2942544.png" alt="Site Telekom Logo" class="logo-img">
+        <h2 class="header-title">İzin Yönetim Sistemi</h2>
+    </div>
+    
+    <div class="nav-buttons">
+        <button class="nav-btn active" data-role="personel" onclick="switchRole('personel')">👤 Personel</button>
+        <button class="nav-btn" data-role="yonetici" onclick="switchRole('yonetici')">🛡️ Yönetici (TL)</button>
+        <button class="nav-btn" data-role="ik" onclick="switchRole('ik')">🏢 İK</button>
     </div>
 
-    <div id="maintenance-screen">
-        <div class="maintenance-content">
-            <span style="font-size: 4rem;">👩‍🏫</span>
-            <h1>Sistem Mola Verdi!</h1>
-            <p>Esra Hoca'dan gelecek kritik bilgileri bekliyoruz... 🚀</p>
+    <div id="personel-panel">
+        <div class="panel-info" style="background:#eff6ff; padding:15px; border-radius:8px; color:#1e40af; margin-bottom:20px; border-left: 5px solid #2563eb;">
+            👋 <strong>Hoş Geldiniz!</strong> Yeni izin talebi oluşturabilir veya geçmiş izinlerinizi sorgulayabilirsiniz.
         </div>
-    </div>
 
-    <div id="main-app">
-        <div class="header">
-            <div class="header-top">
-                <h1><i class="fas fa-compass"></i> S Sport Plus - Temsilci Pusulası</h1>
-                <div class="developer-badge">
-                    <i class="fas fa-code"></i> Developed by Doğuş Yalçınkaya
+        <form id="leaveForm" onsubmit="submitLeave(event)">
+            <div class="form-group">
+                <label>Ad Soyad</label>
+                <input type="text" id="name" placeholder="Adınız ve Soyadınız" required>
+            </div>
+            <div class="form-group">
+                <label>Proje</label>
+                <select id="project" required>
+                    <option value="" disabled selected>Seçiniz...</option>
+                    <option value="TTNET">TTNET</option>
+                    <option value="TÜRKNET">TÜRKNET</option>
+                    <option value="OSK">OSK</option>
+                    <option value="SSPORT">SSPORT</option>
+                    <option value="TÜRKSAT">TÜRKSAT</option>
+                </select>
+            </div>
+            <div class="form-group" style="display:flex; gap:10px;">
+                <div style="flex:1">
+                    <label>Başlangıç</label>
+                    <input type="date" id="startDate" onchange="calcDays()" required>
+                </div>
+                <div style="flex:1">
+                    <label>Bitiş</label>
+                    <input type="date" id="endDate" onchange="calcDays()" required>
                 </div>
             </div>
-
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" id="searchInput" placeholder="Hızlı Ara: '1001', 'Vestel', 'NBA', 'Donma', 'Fiyat'..." onkeyup="filterContent()">
+            <div class="form-group">
+                <label>Toplam: <span id="dayPreview" style="font-weight:normal">-</span></label>
             </div>
+            <div class="form-group">
+                <label>İzin Türü</label>
+                <select id="type">
+                    <option value="Yıllık İzin">Yıllık İzin</option>
+                    <option value="Hastalık">Hastalık Raporu</option>
+                    <option value="Mazeret">Mazeret İzni</option>
+                    <option value="Babalık">Babalık İzni</option>
+                    <option value="Cenaze izni">Cenaze izni</option>
+                    <option value="Diğer">Diğer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Açıklama</label>
+                <textarea id="reason" rows="3" placeholder="İzin nedeni..." required></textarea>
+            </div>
+            <button type="submit" class="submit-btn" id="btnSubmit">Talebi Gönder</button>
+        </form>
 
-            <div class="filter-container">
-                <button class="filter-btn active" onclick="filterCategory('all')">Tümü</button>
-                <button class="filter-btn" onclick="filterCategory('Teknik')">Teknik</button>
-                <button class="filter-btn" onclick="filterCategory('İkna')">İkna</button>
-                <button class="filter-btn" onclick="filterCategory('Kampanya')">Kampanya</button>
-                <button class="filter-btn" onclick="filterCategory('Bilgi')">Bilgi</button>
-                
-                <a href="https://www.ssportplus.com/yayin-akisi/" target="_blank" class="filter-btn link-btn"><i class="fas fa-calendar-alt"></i> Yayın Akışı</a>
-                
-                <button class="filter-btn news-btn" onclick="openNews()">
-                    📢 Duyurular
-                </button>
+        <div id="history-area" style="margin-top: 30px; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
+            <h4 style="display:flex; align-items:center; gap:10px;">📂 Geçmiş İzinlerim</h4>
+            <p style="font-size:0.9em; color:#64748b;">Adınızı yazıp butona basarak eski taleplerinizin durumunu görebilirsiniz.</p>
+            <button type="button" style="background:#475569; color:white; border:none; padding:12px 25px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1em;" onclick="loadRequests('personel')">🔍 Geçmişimi Getir</button>
+            <div id="personelHistoryList" class="history-list hidden" style="margin-top:25px;"></div>
+        </div>
+    </div>
 
-                <button class="filter-btn guide-btn" onclick="openGuide()">
-                    📖 Spor Rehberi
-                </button>
-                
-                <button class="filter-btn wizard-btn" onclick="openWizard()">
-                    ⚖️ İade Asistanı
-                </button>
+    <div id="admin-panel" class="hidden">
+        <div id="admin-header" style="display:flex; flex-direction: column; gap:10px; margin-bottom:15px;">
+            <div id="admin-msg" style="padding:10px; border-radius:6px; background:#fffbeb; color:#92400e;"></div>
+            <div style="background:#f1f5f9; padding:10px; border-radius:6px; font-size:0.95em; display:flex; justify-content:space-between; align-items:center;">
+                <span>👤 Giriş Yapan: <strong id="activeAdminName" style="color:#0f172a;"></strong></span>
+                <span id="activeProjectBadge" style="display:none; background:#334155; color:white; padding:2px 8px; border-radius:4px; font-size:0.85em;"></span>
             </div>
         </div>
-
-        <div class="container">
-            <div class="grid" id="cardGrid"></div>
+        <div id="loader" class="loading hidden">
+            <div style="display:inline-block; width:20px; height:20px; border:3px solid #f3f3f3; border-top:3px solid var(--primary); border-radius:50%; animation: spin 1s linear infinite;"></div>
+            Veriler Yükleniyor...
         </div>
+        <table id="requestsTable">
+            <thead>
+                <tr>
+                    <th style="width:25%">Personel / Proje</th>
+                    <th style="width:25%">Tarih / Gün</th>
+                    <th style="width:30%">Tür / Açıklama</th>
+                    <th style="width:20%">Durum / İşlem</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
     </div>
+</div>
 
-    <div id="news-modal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('news-modal')">&times;</span>
-            <h2 style="color:var(--primary); border-bottom:2px solid var(--secondary); padding-bottom:10px; margin-bottom:20px;">
-                📢 Bu Hafta Neler Oldu?
-            </h2>
-            <div id="news-container"></div>
-        </div>
-    </div>
+<style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
 
-    <div id="wizard-modal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('wizard-modal')">&times;</span>
-            <div id="wizard-body"></div>
-        </div>
-    </div>
+<script>
+    // ==========================================
+    // 🔒 GÜVENLİK AYARLARI (ŞİFRELEME)
+    // ==========================================
+    
+    // Base64 Şifreler (Koda bakınca anlaşılmaz)
+    const PAGE_PASS_ENCODED = "MzYzNg==";       // 3636
+    const YONETICI_PASS_ENCODED = "MzY0ODc=";   // 36487
+    const IK_PASS_ENCODED = "c25uMTI4OTM2";     // snn128936
+    
+    const BAKIM_MODU = false; 
 
-    <div id="guide-modal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('guide-modal')">&times;</span>
-            <h2 style="text-align:center; color:var(--primary); margin-bottom:10px;">📖 Spor Terimleri & İçerik Rehberi</h2>
-            <p style="text-align:center; color:#666;">Müşteriye hangi içeriğin ne olduğunu açıklamak için ipuçları.</p>
-            <div class="guide-grid" id="guide-grid"></div>
-        </div>
-    </div>
+    // Sağ tık ve F12 engelleme (Güvenlik için)
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.onkeydown = function(e) {
+        if(e.keyCode == 123) { return false; } // F12
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)){ return false; }
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)){ return false; }
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)){ return false; }
+    }
 
-    <script>
-        const BAKIM_MODU = false; 
-        const DOGRU_SIFRE_HASH = "c3Nwb3J0Kw=="; // ssport+
-
-        // GÜVENLİK
-        document.addEventListener('contextmenu', event => event.preventDefault());
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
+    // ==========================================
+    // 🚀 GİRİŞ FONKSİYONLARI
+    // ==========================================
+    function safeAlert(icon, title, text) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: icon, title: title, text: text, confirmButtonColor: '#2563eb' });
+        } else {
+            alert(title + "\n" + text);
         }
+    }
 
-        function girisYap() {
-            var girilen = document.getElementById("passInput").value;
-            try {
-                if (btoa(girilen) === DOGRU_SIFRE_HASH) {
-                    document.getElementById("login-screen").style.display = "none"; 
-                    if (BAKIM_MODU) document.getElementById("maintenance-screen").style.display = "flex";
-                    else {
-                        document.getElementById("main-app").style.display = "block";
-                        if(document.getElementById('cardGrid').innerHTML === "") renderCards(database);
-                    }
-                } else { document.getElementById("error-msg").style.display = "block"; }
-            } catch (e) { document.getElementById("error-msg").style.display = "block"; }
+    function checkEnter(e) {
+        if(e.key === "Enter") verifyPageAccess();
+    }
+
+    function verifyPageAccess() {
+        const input = document.getElementById('page-pass').value;
+        // btoa = Tarayıcının dahili şifreleme fonksiyonu
+        try {
+            if (btoa(input) === PAGE_PASS_ENCODED) {
+                document.getElementById('page-lock-screen').style.display = 'none'; 
+                if (BAKIM_MODU) {
+                    document.getElementById('maintenance-screen').style.display = 'block';
+                    document.body.style.background = "#e2e8f0";
+                } else {
+                    document.getElementById('main-app').style.display = 'block';
+                }
+            } else {
+                safeAlert('error', 'Hatalı Şifre', 'Lütfen tekrar deneyiniz.');
+            }
+        } catch (e) {
+            safeAlert('error', 'Hata', 'Giriş yapılırken bir sorun oluştu.');
         }
-        function enterBas(e) { if (e.key === "Enter") girisYap(); }
+    }
 
-        // ==========================================
-        // 📢 DUYURULAR & GÜNCELLEMELER
-        // ==========================================
-        const newsData = [
-            { date: "21.11.2025", title: "Vestel TV Dil Sorunu (GÜNCEL)", desc: "Eski tarayıcıya sahip cihazlar için gerekli düzenleme sahaya alınmıştır. Sorun çözülmüş olmalıdır, ancak kullanıcı dönüşlerine göre kontroller devam etmektedir.", type: "update" },
-            { date: "21.11.2025", title: "Churn İndirim Fiyatı Değişti", desc: "Yıllık paket churn (ikna) fiyatı 1499 TL olarak güncellenmiştir.", type: "update" },
-            { date: "20.11.2025", title: "Erlab Çözümleri Eklendi", desc: "Panelde 'Teknik' kategorisi altına sık karşılaşılan Erlab hata kodları ve çözümleri eklenmiştir.", type: "info" },
-            { date: "18.11.2025", title: "Yayın Akışı Güncellemesi", desc: "EuroLeague çift maç haftası nedeniyle yayın akışında yoğunluk olabilir, müşterileri web sitesine yönlendirelim.", type: "info" }
-        ];
+    // ==========================================
+    // MEVCUT UYGULAMA KODLARI
+    // ==========================================
+    const API_URL = "https://script.google.com/macros/s/AKfycby1QGB4lpO_VRt-PYCORj9DggoYvvwGPcSxGq4gTD9deYPpyNQr1bjMwncaKW6hGxgeSw/exec";
+    
+    let currentRole = 'personel';
+    let currentAdminName = '';
+    let currentAdminProject = ''; 
 
-        function openNews() {
-            document.getElementById('news-modal').style.display = 'flex';
-            const container = document.getElementById('news-container');
-            container.innerHTML = '';
+    async function switchRole(role) {
+        currentAdminName = ''; currentAdminProject = '';
+        document.getElementById('activeAdminName').innerText = '';
+        document.getElementById('activeProjectBadge').style.display = 'none';
+
+        if (role === 'personel') { activateTab(role); return; }
+
+        let targetHash = (role === 'yonetici') ? YONETICI_PASS_ENCODED : IK_PASS_ENCODED;
+        let roleTitle = (role === 'yonetici') ? 'Yönetici (TL) Girişi' : 'İK Girişi';
+        let roleColor = (role === 'yonetici') ? '#f59e0b' : '#7c3aed';
+
+        // Eğer Swal yüklenmediyse manuel prompt kullan
+        if (typeof Swal === 'undefined') {
+            let pass = prompt(roleTitle + "\nLütfen şifrenizi giriniz:");
+            if(!pass) return;
+            if(btoa(pass) !== targetHash) { alert("Hatalı Şifre!"); return; }
             
-            newsData.forEach(item => {
-                let tagClass = item.type === 'fix' ? 'tag-fix' : (item.type === 'update' ? 'tag-update' : 'tag-info');
-                let tagText = item.type === 'fix' ? 'Çözüldü' : (item.type === 'update' ? 'Değişiklik' : 'Bilgi');
-                
-                container.innerHTML += `
-                    <div class="news-item">
-                        <span class="news-date">${item.date}</span>
-                        <span class="news-title">${item.title}</span>
-                        <div class="news-desc">${item.desc}</div>
-                        <span class="news-tag ${tagClass}">${tagText}</span>
-                    </div>
-                `;
-            });
+            let name = prompt("Adınız Soyadınız:");
+            if(!name) return;
+            
+            if(role === 'yonetici') {
+                let prj = prompt("Projeniz (TTNET, TÜRKNET, OSK, SSPORT, TÜRKSAT):");
+                if(!prj) return;
+                currentAdminProject = prj.toUpperCase();
+            }
+            currentAdminName = name;
+            activateTab(role);
+            return;
         }
 
-        // ==========================================
-        // 📖 SPOR REHBERİ VERİLERİ
-        // ==========================================
-        const sportsData = [
-            { title: "WorldSBK", icon: "fa-motorcycle", desc: "Dünya Superbike Şampiyonası. Sokakta satılan motorların modifiye edilip yarıştığı seri.", tip: "🇹🇷 Toprak Razgatlıoğlu burada! (MotoGP testleri yapsa da bu sezon hala BMW ile SBK'da)." },
-            { title: "MotoGP", icon: "fa-motorcycle", desc: "Motosiklet dünyasının Formula 1'i. Sadece yarış için üretilen özel prototip motorlar.", tip: "En hızlı prototip motorlar burada." },
-            { title: "UFC", icon: "fa-hand-fist", desc: "Boks, Kickboks, Judo ve Güreş tekniklerinin karışımı olan Kafes Dövüşü.", tip: "Islam Makhachev ve dünyanın en sert dövüşçüleri." },
-            { title: "Serie A", icon: "fa-futbol", desc: "İtalya'nın en üst düzey futbol ligi. Defansif taktiklerin ön planda olduğu dev lig.", tip: "Hakan Çalhanoğlu (Inter) ve Kenan Yıldız (Juventus) burada!" },
-            { title: "La Liga", icon: "fa-futbol", desc: "İspanya'nın en üst düzey futbol ligi. Tekniğin ve pas oyununun zirvesi.", tip: "Real Madrid (Arda Güler) ve Barcelona derbisi (El Clasico)." },
-            { title: "EuroLeague", icon: "fa-basketball", desc: "Avrupa'nın kulüpler bazındaki en büyük basketbol organizasyonu.", tip: "Fenerbahçe ve Anadolu Efes bizi temsil ediyor." },
-            { title: "NBA", icon: "fa-basketball", desc: "ABD Profesyonel Basketbol Ligi. Dünyanın en iyi basketbolcularının şov sahnesi.", tip: "LeBron, Curry, Alperen Şengün burada." },
-            { title: "NFL", icon: "fa-football", desc: "Amerikan Futbolu Ligi. Kask ve korumalıklarla oynanan, yüksek temaslı strateji sporu.", tip: "Super Bowl (Final) bizde!" },
-            { title: "NCAA", icon: "fa-graduation-cap", desc: "ABD Üniversite Ligi. Profesyonelliğe geçmeden önceki son amatör durak.", tip: "Geleceğin yıldızları burada oynar." },
-            { title: "WRC", icon: "fa-car-side", desc: "Dünya Ralli Şampiyonası. Asfalt, toprak ve karlı zorlu yollarda zamana karşı yarış.", tip: "Arazi ve zorlu şartlarda yapılan yarışlar." },
-            { title: "Libertadores", icon: "fa-futbol", desc: "Güney Amerika'nın Şampiyonlar Ligi. Brezilya ve Arjantin takımlarının kıyasıya mücadelesi.", tip: "Brezilya ve Arjantin takımları ağırlıklı." }
-        ];
+        // Swal yüklüyse görsel giriş
+        const { value: password } = await Swal.fire({
+            title: roleTitle, text: 'Lütfen giriş şifresini giriniz', input: 'password',
+            inputPlaceholder: 'Şifre', confirmButtonText: 'Devam Et', confirmButtonColor: roleColor,
+            showCancelButton: true, cancelButtonText: 'İptal', backdrop: `rgba(0,0,0,0.4)`
+        });
 
-        function openGuide() {
-            document.getElementById('guide-modal').style.display = 'flex';
-            const grid = document.getElementById('guide-grid');
-            grid.innerHTML = '';
-            sportsData.forEach(sport => {
-                grid.innerHTML += `
-                    <div class="guide-item">
-                        <i class="fas ${sport.icon} guide-icon"></i>
-                        <span class="guide-title">${sport.title}</span>
-                        <div class="guide-desc">${sport.desc}</div>
-                        <div class="guide-tip"><i class="fas fa-lightbulb"></i> ${sport.tip}</div>
-                    </div>
-                `;
-            });
+        if (!password) return;
+        if (btoa(password) !== targetHash) {
+            Swal.fire({ icon: 'error', title: 'Hatalı Şifre!', text: 'Girdiğiniz şifre yanlış.', confirmButtonColor: '#ef4444' });
+            return;
         }
 
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        let htmlContent = `<input id="swal-name" class="swal2-input" placeholder="Adınız"><input id="swal-surname" class="swal2-input" placeholder="Soyadınız">`;
+        if (role === 'yonetici') {
+            htmlContent += `<select id="swal-project" class="swal2-select" style="display:flex; width:80%; margin: 10px auto;">
+                <option value="" disabled selected>Projenizi Seçiniz</option>
+                <option value="TTNET">TTNET</option><option value="TÜRKNET">TÜRKNET</option>
+                <option value="OSK">OSK</option><option value="SSPORT">SSPORT</option><option value="TÜRKSAT">TÜRKSAT</option></select>`;
+        }
 
-        // ==========================================
-        // ⚖️ İADE ASİSTANI (WIZARD)
-        // ==========================================
-        const wizardSteps = {
-            start: {
-                title: "İade Talebi Analizi",
-                text: "Lütfen müşterinin durumunu seçiniz:",
-                options: [
-                    { text: "İçerik İzlemiş / Kullanım Var", next: "izleme_var" },
-                    { text: "Aylık Paket (İzleme YOK)", next: "aylik_izleme_yok" },
-                    { text: "Yıllık Paket (İzleme YOK)", next: "yillik_izleme_yok" },
-                    { text: "Mükerrer (Çift) Çekim", next: "mukerrer" },
-                    { text: "Aynı Gün Yanlışlıkla Yıllık Alım", next: "ayni_gun_yillik" },
-                    { text: "Apple / Google Store İptali", next: "store_iptal" },
-                    { text: "Winback Paket Geçiş İadesi", next: "winback_iade" }
-                ]
-            },
-            izleme_var: { result: "red", title: "❌ İADE REDDEDİLİR", text: "İçerik izlenmişse (genel arıza hariç) iade yapılmaz.", script: "Hizmetimizden aktif olarak faydalandığınız için iade prosedürlerimiz gereği talebinize olumlu yanıt veremiyoruz." },
-            aylik_izleme_yok: { title: "Aylık Paket - İzleme Yok", text: "THH tehdidi var mı?", options: [{ text: "Evet/Israrcı", next: "aylik_teklif" }, { text: "Hayır", next: "izleme_var" }] },
-            aylik_teklif: { title: "İndirim Teklifi", text: "Önce 6AY50 ile indirim teklif et.", options: [{ text: "İndirimi Kabul Etti", next: "indirim_kabul" }, { text: "Reddetti (Tam İade)", next: "tam_iade" }] },
-            yillik_izleme_yok: { title: "Yıllık Paket", text: "Paket kampanyalı mıydı?", options: [{ text: "Hayır (Standart)", next: "yillik_standart" }, { text: "Evet (Kampanyalı)", next: "yillik_kampanyali" }] },
-            yillik_standart: { title: "Standart Yıllık", text: "Sırasıyla: 1. YILLIKLOCA İndirimi, 2. Aylığa Geçiş öner.", options: [{ text: "Teklifi Kabul Etti", next: "islem_tamam" }, { text: "Hepsini Reddetti (Tam İade)", next: "tam_iade" }] },
-            yillik_kampanyali: { title: "Kampanyalı Yıllık", text: "Sadece Aylığa Geçiş önerilebilir.", options: [{ text: "Aylığa Geçişi Kabul Etti", next: "ayliga_gecis" }, { text: "Reddetti (Tam İade)", next: "tam_iade" }] },
-            mukerrer: { title: "Mükerrer Çekim", text: "15 gün içinde ve Aynı Cihaz/IP mi?", options: [{ text: "Evet", next: "mukerrer_iade" }, { text: "Hayır", next: "izleme_var" }] },
-            ayni_gun_yillik: { title: "Aynı Gün Yıllık", text: "24 saat içinde mi?", options: [{ text: "Evet", next: "bir_defaya_mahsus" }, { text: "Hayır", next: "izleme_var" }] },
-            store_iptal: { result: "red", title: "❌ BİZ İPTAL EDEMEYİZ", text: "Apple/Google alımları telefondan yapılmalı." },
-            winback_iade: { result: "yellow", title: "⚠️ SADECE 2. PAKET İADE", text: "Sadece son alınan indirimli paket iade edilebilir." },
-            indirim_kabul: { result: "green", title: "✅ İNDİRİM TANIMLA", text: "139.5 TL iade yapıldı." },
-            tam_iade: { result: "green", title: "✅ TAM İADE YAP", text: "Teklifler reddedildi, iade sağla." },
-            mukerrer_iade: { result: "green", title: "✅ MÜKERRER İADE", text: "Fazla paketi iade et." },
-            ayliga_gecis: { result: "green", title: "✅ AYLIK GEÇİŞ", text: "Yıllık iptal, aylık tanımla, farkı iade et." },
-            bir_defaya_mahsus: { result: "green", title: "✅ TEK SEFERLİK İADE", text: "Yıllık iade, aylık devam." },
-            islem_tamam: { result: "green", title: "✅ İŞLEM TAMAM", text: "Teklif kabul edildi." }
+        const { value: formValues } = await Swal.fire({
+            title: 'Giriş Bilgileri', html: htmlContent, focusConfirm: false,
+            confirmButtonText: 'Panele Gir', confirmButtonColor: roleColor,
+            preConfirm: () => {
+                const name = document.getElementById('swal-name').value;
+                const surname = document.getElementById('swal-surname').value;
+                let project = "";
+                if (role === 'yonetici') {
+                    project = document.getElementById('swal-project').value;
+                    if (!project) { Swal.showValidationMessage('Lütfen projenizi seçiniz'); return false; }
+                }
+                if (!name || !surname) { Swal.showValidationMessage('Ad ve Soyad alanları zorunludur'); return false; }
+                return { name: name, surname: surname, project: project };
+            }
+        });
+
+        if (formValues) {
+            currentAdminName = `${formValues.name} ${formValues.surname}`; 
+            currentAdminProject = formValues.project; 
+            document.getElementById('activeAdminName').innerText = currentAdminName;
+            if(currentAdminProject) {
+                const pBadge = document.getElementById('activeProjectBadge');
+                pBadge.innerText = currentAdminProject + " Ekibi"; pBadge.style.display = "inline-block";
+            }
+            activateTab(role);
+        }
+    }
+
+    function activateTab(role) {
+        currentRole = role;
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector(`[data-role="${role}"]`).classList.add('active');
+        document.getElementById('personel-panel').classList.toggle('hidden', role !== 'personel');
+        document.getElementById('admin-panel').classList.toggle('hidden', role === 'personel');
+
+        if(role !== 'personel') {
+            const msg = document.getElementById('admin-msg');
+            if(role === 'yonetici') {
+                msg.innerHTML = `🛡️ <strong>Yönetici Paneli (${currentAdminProject}):</strong> Sadece <u>${currentAdminProject}</u> projesindeki talepleri görüyorsunuz.`;
+                msg.style.background = "#fff7ed"; msg.style.color = "#c2410c";
+            } else {
+                msg.innerHTML = "🏢 <strong>İK Paneli:</strong> Tüm projelerdeki talepleri yönetebilirsiniz.";
+                msg.style.background = "#f5f3ff"; msg.style.color = "#6d28d9";
+            }
+            loadRequests('admin');
+        }
+    }
+
+    function calcDays() {
+        const s = document.getElementById('startDate').value;
+        const e = document.getElementById('endDate').value;
+        const p = document.getElementById('dayPreview');
+        if(s && e) {
+            const diff = new Date(e) - new Date(s);
+            const days = Math.ceil(diff / (1000*60*60*24)) + 1;
+            if(days > 0) { p.innerText = days + " Gün"; p.style.color = "var(--primary)"; p.style.fontWeight = "bold"; } 
+            else { p.innerText = "Hatalı Tarih"; p.style.color = "red"; }
+        }
+    }
+
+    function submitLeave(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmit');
+        const s = document.getElementById('startDate').value;
+        const e_date = document.getElementById('endDate').value;
+        const days = Math.ceil((new Date(e_date) - new Date(s)) / (1000*60*60*24)) + 1;
+
+        if(days <= 0) { safeAlert('error', 'Hata', 'Bitiş tarihi başlangıçtan önce olamaz.'); return; }
+
+        btn.disabled = true; btn.innerText = "Gönderiliyor...";
+
+        const data = {
+            action: 'create', id: Date.now(), name: document.getElementById('name').value.trim(),
+            project: document.getElementById('project').value, start: s, end: e_date, days: days,
+            type: document.getElementById('type').value, reason: document.getElementById('reason').value,
+            status: 'tl_bekliyor'
         };
 
-        function openWizard() { document.getElementById('wizard-modal').style.display = 'flex'; renderStep('start'); }
+        fetch(API_URL, { method: "POST", body: JSON.stringify(data) })
+        .then(() => {
+            safeAlert('success', 'Başarılı!', 'İzin talebiniz yönetici onayına gönderildi.');
+            document.getElementById('leaveForm').reset(); document.getElementById('dayPreview').innerText = "-";
+            btn.disabled = false; btn.innerText = "Talebi Gönder";
+        }).catch(err => { safeAlert('error', 'Hata', 'Sunucu hatası: ' + err); btn.disabled = false; });
+    }
 
-        function renderStep(stepKey) {
-            const step = wizardSteps[stepKey];
-            const body = document.getElementById('wizard-body');
-            let html = `<h2>${step.title || ''}</h2>`;
-            if (step.result) {
-                let icon = step.result === 'red' ? '🛑' : (step.result === 'green' ? '✅' : '⚠️');
-                let styleClass = step.result === 'red' ? 'res-red' : (step.result === 'green' ? 'res-green' : 'res-yellow');
-                html += `<div class="result-box ${styleClass}"><div style="font-size:3rem; margin-bottom:10px;">${icon}</div><h3>${step.title}</h3><p>${step.text}</p>${step.script ? `<div class="script-box">${step.script}</div>` : ''}</div><button class="restart-btn" onclick="renderStep('start')"><i class="fas fa-redo"></i> Başa Dön</button>`;
-            } else {
-                html += `<p>${step.text}</p><div class="wizard-options">`;
-                step.options.forEach(opt => { html += `<button class="option-btn" onclick="renderStep('${opt.next}')"><i class="fas fa-chevron-right"></i> ${opt.text}</button>`; });
-                html += `</div>`;
-                if(stepKey !== 'start') html += `<button class="restart-btn" onclick="renderStep('start')" style="background:#eee; color:#333; margin-top:15px;">Geri Dön</button>`;
-            }
-            body.innerHTML = html;
-        }
+    function loadRequests(mode) {
+        let fetchUrl = API_URL;
+        if (mode === 'personel') {
+            const nameVal = document.getElementById('name').value.trim();
+            if(!nameVal) { safeAlert('warning', 'Uyarı', 'Lütfen önce yukarıya Ad Soyad giriniz.'); return; }
+            fetchUrl += "?name=" + encodeURIComponent(nameVal);
+            
+            const listContainer = document.getElementById('personelHistoryList');
+            listContainer.classList.remove('hidden');
+            listContainer.innerHTML = '<div style="text-align:center; padding:20px; font-size:1.2em;">⏳ Geçmiş Yükleniyor...</div>';
 
-        // ==========================================
-        // 📊 ANA VERİ SETİ
-        // ==========================================
-        const database = [
-            { title: "Bilgi: Hangi İçerikler Var?", category: "Bilgi", type: "bilgi", tags: ["maçlar", "ligler", "spor"], text: "La Liga, Serie A, EuroLeague, NBA, UFC, ATP, Wimbledon, NFL, Libertadores, Sudamericana, Moto GP, WRC, Nascar.", script: "S Sport Plus'ta EuroLeague, NBA, La Liga, Serie A, UFC ve MotoGP gibi dünyanın en büyük spor organizasyonlarını tek pakette izleyebilirsiniz." },
-            { title: "Bilgi: İnternet Hızı Gereksinimi", category: "Bilgi", type: "bilgi", tags: ["hız", "mbps", "internet"], text: "SD Yayın: Min 3 Mbps | HD Yayın: Min 10 Mbps.", script: "Kesintisiz HD yayın için en az 10 Mbps indirme (download) hızına sahip olmanız önerilir." },
-            { title: "Bilgi: Profil Oluşturma", category: "Bilgi", type: "bilgi", tags: ["profil", "çocuk"], text: "Aynı hesapta farklı profiller oluşturulabilir. Çocuk Profili seçeneği mevcuttur.", script: "Hesabınızda kendiniz ve aile üyeleriniz için ayrı profiller oluşturabilir, çocuklarınız için güvenli çocuk profili açabilirsiniz." },
-            { title: "Bilgi: Çoklu İzleme (Multi-View)", category: "Bilgi", type: "bilgi", tags: ["4 ekran", "aynı anda"], text: "Sadece Web sitesinde geçerlidir. Aynı ekranda 4 maça kadar izlenebilir.", script: "Web sitemiz üzerinden 'Çoklu İzleme' özelliğiyle aynı anda 4 farklı canlı yayını tek ekranda takip edebilirsiniz." },
-            { title: "Bilgi: Veri Tasarrufu Modu", category: "Bilgi", type: "bilgi", tags: ["mobil", "kota"], text: "Mobil uygulamada veri tasarrufu modu mevcuttur. Yayın kalitesini düşürerek kota dostu olur.", script: "Mobil uygulamamızdaki 'Veri Tasarrufu' modunu açarak internet kotanızı daha verimli kullanabilirsiniz." },
-            { title: "Bilgi: Favori Listesi", category: "Bilgi", type: "bilgi", tags: ["listem", "takip"], text: "İçerikler 'Listem'e eklenerek favorilere alınabilir.", script: "Sevdiğiniz programları veya maçları 'Listem'e ekleyerek daha sonra kolayca ulaşabilirsiniz." },
-            { title: "Bilgi: Üyelik Dondurma", category: "Bilgi", type: "bilgi", tags: ["dondurma", "ara verme"], text: "Üyelik dondurma özelliği YOKTUR. İptal edip istendiğinde tekrar başlatılabilir.", script: "Sistemimizde üyelik dondurma özelliği bulunmamaktadır. Dilerseniz üyeliğinizi iptal edip, tekrar izlemek istediğinizde hesabınızı aktif edebilirsiniz." },
-            { title: "Bilgi: Paket Fiyatları (2025)", category: "Bilgi", type: "bilgi", tags: ["ücret"], text: "Aylık: 279 TL | Yıllık: 1799 TL", script: "Güncel fiyatlarımız; Aylık paket 279 TL, Yıllık paket ise 1799 TL'dir." },
-            { title: "Bilgi: NBA Sezonu 25-26", category: "Bilgi", type: "bilgi", tags: ["nba"], text: "Normal sezon, All-Star, Play-off canlı.", script: "NBA'de tüm sezonu ve finalleri canlı yayınlıyoruz." },
-            { title: "Bilgi: NFL (Amerikan Futbolu)", category: "Bilgi", type: "bilgi", tags: ["nfl"], text: "RedZone ve Super Bowl dahil.", script: "NFL heyecanı RedZone ve Super Bowl dahil S Sport Plus'ta." },
-            { title: "Bilgi: Cihaz Sınırı", category: "Bilgi", type: "bilgi", tags: ["sınır"], text: "Sınırsız cihazda oturum açılır, AYNI ANDA 1 cihaz izler.", script: "Hesabınızla dilediğiniz kadar cihazdan giriş yapabilirsiniz ancak aynı anda tek ekrandan izleyebilirsiniz." },
-            { title: "Teknik: TV Donma Adımları", category: "Teknik", type: "teknik", tags: ["tv", "donma", "smart"], text: "1. Modem/TV fişten çek (10sn). 2. Kanal değiştir. 3. TV Tarayıcısından Hız Testi (8Mbps+ gerekli).", script: "Modeminizi ve televizyonunuzu fişten çekip 10 saniye bekledikten sonra tekrar takabilir misiniz? Düzelmezse TV tarayıcısından hiztesti.com.tr testi yapalım.", link: "https://www.hiztesti.com.tr/" },
-            { title: "Teknik: Mobil Donma Adımları", category: "Teknik", type: "teknik", tags: ["mobil", "android", "ios"], text: "1. Mobil Veri ile dene. 2. Arka plan uygulamalarını kapat. 3. Önbellek Temizle.", script: "Wifi'yi kapatıp mobil veri ile denemenizi rica ederim. Sorun devam ederse uygulama önbelleğini temizleyelim." },
-            { title: "Teknik: PC Donma Adımları", category: "Teknik", type: "teknik", tags: ["web", "pc"], text: "1. Çözünürlüğü 720p yap. 2. Farklı tarayıcı (Edge/Chrome). 3. Ping testi.", script: "Tarayıcı ayarlarından kaliteyi 1080p yerine 720p seçerek deneyebilir misiniz? Farklı bir tarayıcıda da kontrol edelim." },
-            { title: "Uyarı: Vestel / Arçelik Desteği", category: "Teknik", type: "teknik", tags: ["vestel", "arçelik", "beko"], text: "⚠️ 2018 ve öncesi Vestel/Arçelik TV'lerde destek YOKTUR. Sadece 2019+ modeller desteklenir.", script: "2019 yılı öncesi üretilen Vestel ve Arçelik televizyonlarda altyapı desteği sona ermiştir. Yayınları TV Box veya Chromecast ile izleyebilirsiniz." },
-            { title: "Hata Kodu: 1001 / Media Decode", category: "Teknik", type: "teknik", tags: ["1001", "hata"], text: "Cihaz/Tarayıcı önbellek sorunu. Çerezleri temizle, uygulamayı sil-yükle.", script: "Bu hata cihazınızın önbelleği kaynaklı olabilir. Uygulamayı silip tekrar yüklemenizi rica ederim." },
-            { title: "Hata Kodu: 2002 / 2001 / 2403", category: "Teknik", type: "teknik", tags: ["2002", "2001", "sinyal"], text: "Yayın sinyali veya erişim sorunu. MCR kaynaklı olabilir..", script: "Şu an yayın sinyali ile ilgili genel bir kontrol sağlıyoruz. Kısa süre içinde düzelecektir." },
-            { title: "Hata Kodu: 1020 / Erişim Engeli", category: "Teknik", type: "teknik", tags: ["1020", "vpn"], text: "Güvenlik duvarı veya VPN engeli. VPN kapalı olmalı..", script: "Güvenlik duvarı kaynaklı bir engelleme görünüyor. VPN açıksa kapatmanızı rica ederim." },
-            { title: "Hata: 'Abonelik Başkasına Ait'", category: "Teknik", type: "teknik", tags: ["store", "apple"], text: "Cihazdaki Store hesabı farklı bir mail ile eşleşmiş.", script: "Cihazınızdaki mağaza hesabınızla daha önce farklı bir mail adresi üzerinden üyelik başlatılmış. Diğer mailinizle giriş yapmayı deneyin." },
-            { title: "İkna: Fiyat Avantajı", category: "İkna", type: "ikna", tags: ["pahalı", "fiyat"], text: "Aylık 279 TL pahalı gelirse: 'Günlük 9 TL'. Taahhütsüz.", script: "S Sport Plus'ta taahhüt vermeden, günlük sadece bir çay parasına dünyanın en büyük liglerini izleyebilirsiniz." },
-            { title: "İkna: Özellikler (Geri Al / Çoklu)", category: "İkna", type: "ikna", tags: ["özellik"], text: "Vurgula: Tekrar İzle, Durdur/Geri Al, Çoklu İzleme, İndir İzle.", script: "Maçları kaçırma derdiniz yok; 'Tekrar İzle' özelliği ile dilediğiniz zaman izleyebilir, canlı yayını geri alabilirsiniz." },
-            { title: "Rakip: EXXEN vs Biz", category: "İkna", type: "ikna", tags: ["rakip", "exxen"], text: "Exxen sadece Avrupa maçları. Bizde La Liga, Serie A, NBA, F1, UFC var.", script: "Exxen Avrupa maçları odaklıdır. Bizde ise her hafta sonu La Liga, Serie A ve NBA heyecanını kesintisiz takip edebilirsiniz." },
-            { title: "Rakip: TOD / Digiturk vs Biz", category: "İkna", type: "ikna", tags: ["rakip", "tod"], text: "TOD paketleri parçalıdır. Bizde hepsi TEK paket.", script: "Diğer platformlarda ligler için ayrı paketler almanız gerekirken, S Sport Plus'ta tüm içeriklere tek bir abonelikle erişirsiniz." },
-            { title: "Kampanya: YILLIKLOCA", category: "Kampanya", type: "kampanya", tags: ["yıllık", "web"], text: "Web'e özel yıllık 1499 TL.", script: "YILLIKLOCA kodu ile yıllık paketi 1499 TL avantajlı fiyatıyla alabilirsiniz.", code: "YILLIKLOCA" },
-            { title: "Kampanya: 6AY50", category: "Kampanya", type: "kampanya", tags: ["aylık", "indirim"], text: "Aylık pakette %50 indirim.", script: "6AY50 kodu ile önümüzdeki ay için %50 indirim tanımlayabiliriz.", code: "6AY50" }
-        ];
+            fetch(fetchUrl).then(res => res.json()).then(data => {
+                listContainer.innerHTML = '';
+                if(data.length === 0) { listContainer.innerHTML = '<div style="text-align:center; padding:10px; color:#94a3b8;">Kayıt bulunamadı.</div>'; return; }
+                
+                data.reverse().forEach(req => {
+                    let footerContent = "";
+                    if(req.status === 'red') {
+                        footerContent = `<div style="display:flex; flex-direction:column; gap:5px; width:100%;">
+                                <span style="color:#ef4444; font-weight:bold;">🛑 Red Sebebi: ${req.reject_reason || '-'}</span>
+                                <div class="approver-badge" style="border-color:#fee2e2; background:#fef2f2; color:#b91c1c;">👤 Red Eden: ${req.approver || 'Yönetici'}</div></div>`;
+                    } else if (req.approver) {
+                        footerContent = `<div class="approver-badge"><span style="color:#22c55e">✔</span> Onaylayan: ${req.approver}</div>`;
+                    } else {
+                        footerContent = `<span style="color:#f59e0b; font-style:italic;">⏳ İşlem Bekleniyor</span>`;
+                    }
+                    listContainer.innerHTML += `
+                        <div class="history-card st-${req.status}">
+                            <div class="card-header">
+                                <div class="card-date">📅 ${formatDate(req.start)} - ${formatDate(req.end)} <span class="card-days-pill">${req.days} Gün</span></div>
+                                <div class="status st-${req.status}">${getStatusName(req.status)}</div>
+                            </div>
+                            <div class="card-body"><div class="card-type">${req.type}</div><div>${req.reason}</div></div>
+                            <div class="card-footer">${footerContent}</div>
+                        </div>`;
+                });
+            });
+        } else {
+            const loader = document.getElementById('loader');
+            const tbody = document.getElementById('tableBody');
+            loader.classList.remove('hidden'); tbody.innerHTML = '';
 
-        function renderCards(data) {
-            const container = document.getElementById('cardGrid');
-            container.innerHTML = '';
-            if(data.length === 0) { container.innerHTML = '<div style="grid-column:1/-1; text-align:center;">Kayıt Yok</div>'; return; }
-            data.forEach(item => {
-                let html = `<div class="card ${item.type}">
-                    <div class="card-header"><h3 class="card-title">${highlightText(item.title)}</h3><span class="badge">${item.category}</span></div>
-                    <div class="card-content"><div>${highlightText(item.text)}</div></div>
-                    <div class="script-box">${highlightText(item.script)}</div>
-                    <div class="card-actions">
-                        <button class="btn btn-copy" onclick="copyText('${item.script.replace(/'/g, "\\'")}')"><i class="fas fa-copy"></i> Kopyala</button>
-                        ${item.code ? `<button class="btn btn-copy" style="background:var(--secondary); color:#333;" onclick="copyText('${item.code}')">Kod</button>` : ''}
-                        ${item.link ? `<a href="${item.link}" target="_blank" class="btn btn-link"><i class="fas fa-external-link-alt"></i> Link</a>` : ''}
-                    </div>
-                </div>`;
-                container.innerHTML += html;
+            fetch(API_URL).then(res => res.json()).then(data => {
+                loader.classList.add('hidden');
+                let filteredData = data;
+                if (currentRole === 'yonetici' && currentAdminProject) { filteredData = data.filter(req => req.project === currentAdminProject); }
+                if(filteredData.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Bu projede bekleyen talep yok.</td></tr>'; return; }
+                filteredData.reverse().forEach(req => renderAdminRow(req, tbody));
             });
         }
+    }
 
-        function filterContent() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = database.filter(item => item.title.toLowerCase().includes(search) || item.text.toLowerCase().includes(search) || item.script.toLowerCase().includes(search) || (item.tags && item.tags.some(t=>t.includes(search))));
-            renderCards(filtered);
+    function renderAdminRow(req, tbody) {
+        let actionHtml = '';
+        if(currentRole === 'yonetici' && req.status === 'tl_bekliyor') {
+            actionHtml = `<button class="action-btn approve" onclick="updateStatus(${req.id}, 'ik_bekliyor')" title="Onayla">✔</button>
+                          <button class="action-btn reject" onclick="rejectRequest(${req.id})" title="Reddet">✖</button>`;
+        } else if(currentRole === 'ik' && req.status === 'ik_bekliyor') {
+            actionHtml = `<button class="action-btn approve" onclick="updateStatus(${req.id}, 'onaylandi')" title="Bitir">✔</button>
+                          <button class="action-btn reject" onclick="rejectRequest(${req.id})" title="Reddet">✖</button>`;
+        } else { actionHtml = `<span class="status st-${req.status}">${getStatusName(req.status)}</span>`; }
+
+        let details = "";
+        if(req.status === 'red' && req.reject_reason) { details += `<span class="reject-reason">Red Nedeni: ${req.reject_reason}</span>`; }
+        if(req.approver) { details += `<div class="audit-info">📝 ${req.approver}</div>`; }
+        const projectName = req.project ? req.project : "";
+
+        tbody.innerHTML += `<tr>
+                <td><strong style="color:#1e293b;">${req.name}</strong><br>${projectName ? `<span class="project-badge">${projectName}</span>` : ''}</td>
+                <td>${formatDate(req.start)} <span class="day-badge">${req.days} G</span></td>
+                <td>${req.type}<br><small style="color:#64748b; font-style:italic;">"${req.reason}"</small></td>
+                <td>${actionHtml}${details}</td>
+            </tr>`;
+    }
+
+    async function rejectRequest(id) {
+        if (typeof Swal === 'undefined') {
+            let reason = prompt("Reddetme Sebebi:");
+            if(reason) updateStatus(id, 'red', reason);
+            return;
         }
+        const { value: reason } = await Swal.fire({
+            title: 'Reddetme Sebebi', input: 'text', inputLabel: 'Lütfen red sebebini giriniz:',
+            inputPlaceholder: 'Örn: Yoğunluk nedeniyle...', showCancelButton: true,
+            confirmButtonColor: '#ef4444', confirmButtonText: 'Reddet', cancelButtonText: 'İptal',
+            inputValidator: (value) => { if (!value) { return 'Sebep yazmanız gerekmektedir!' } }
+        });
+        if (reason) { updateStatus(id, 'red', reason); }
+    }
 
-        function filterCategory(cat) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            renderCards(cat === 'all' ? database : database.filter(i => i.category === cat));
-        }
+    function updateStatus(id, status, rejectReason = "") {
+        if(status !== 'red' && typeof Swal !== 'undefined') {
+             Swal.fire({
+                title: 'Emin misiniz?', text: "Bu işlemi onaylıyor musunuz?", icon: 'question',
+                showCancelButton: true, confirmButtonColor: '#22c55e', cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, Onayla', cancelButtonText: 'Vazgeç'
+            }).then((result) => { if (result.isConfirmed) { executeStatusUpdate(id, status, rejectReason); } });
+        } else if (status !== 'red') {
+            if(confirm("Bu işlemi onaylıyor musunuz?")) executeStatusUpdate(id, status, rejectReason);
+        } else { executeStatusUpdate(id, status, rejectReason); }
+    }
 
-        function highlightText(text) {
-            const s = document.getElementById('searchInput').value.trim();
-            return s ? text.replace(new RegExp(`(${s})`, 'gi'), '<span class="highlight">$1</span>') : text;
-        }
+    function executeStatusUpdate(id, status, rejectReason) {
+        document.getElementById('loader').classList.remove('hidden');
+        const payload = { action: 'update', id: id, status: status, approver: currentAdminName, rejectReason: rejectReason };
+        fetch(API_URL, { method: "POST", body: JSON.stringify(payload) }).then(() => {
+            loadRequests('admin');
+            safeAlert('success', 'Tamamlandı!', status === 'red' ? 'Talep reddedildi.' : 'İşlem başarıyla tamamlandı.');
+        });
+    }
 
-        function copyText(t) { navigator.clipboard.writeText(t).then(() => Swal.fire({icon:'success', title:'Kopyalandı', toast:true, position:'top-end', showConfirmButton:false, timer:1500})); }
+    function formatDate(dateString) {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) { return dateString.split('-').reverse().join('.'); }
+        return date.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
 
-        document.addEventListener('DOMContentLoaded', () => renderCards(database));
-    </script>
+    function getStatusName(s) {
+        const map = { 'tl_bekliyor': 'TL Onayı', 'ik_bekliyor': 'İK Onayı', 'onaylandi': 'Tamamlandı', 'red': 'Reddedildi' };
+        return map[s] || s;
+    }
+</script>
 </body>
 </html>
