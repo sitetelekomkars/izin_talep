@@ -40,6 +40,7 @@
             font-size: 1.1em;
             text-align: center;
             transition: 0.3s;
+            box-sizing: border-box;
         }
         .lock-input:focus { border-color: var(--primary); outline: none; }
         .lock-btn {
@@ -269,9 +270,12 @@
     </div>
 
     <div id="admin-panel" class="hidden">
-        <div id="admin-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <div id="admin-msg" style="padding:10px; border-radius:6px; background:#fffbeb; color:#92400e; flex:1;"></div>
-            <div style="margin-left:10px; font-size:0.9em; color:#64748b;">Giriş: <strong id="activeAdminName" style="color:#0f172a;"></strong></div>
+        <div id="admin-header" style="display:flex; flex-direction: column; gap:10px; margin-bottom:15px;">
+            <div id="admin-msg" style="padding:10px; border-radius:6px; background:#fffbeb; color:#92400e;"></div>
+            <div style="background:#f1f5f9; padding:10px; border-radius:6px; font-size:0.95em; display:flex; justify-content:space-between; align-items:center;">
+                <span>👤 Giriş Yapan: <strong id="activeAdminName" style="color:#0f172a;"></strong></span>
+                <span id="activeProjectBadge" style="display:none; background:#334155; color:white; padding:2px 8px; border-radius:4px; font-size:0.85em;"></span>
+            </div>
         </div>
         
         <div id="loader" class="loading hidden">
@@ -349,10 +353,13 @@
 
     let currentRole = 'personel';
     let currentAdminName = '';
+    let currentAdminProject = ''; // Yönetici projesini tutacak değişken
 
     async function switchRole(role) {
         currentAdminName = '';
+        currentAdminProject = '';
         document.getElementById('activeAdminName').innerText = '';
+        document.getElementById('activeProjectBadge').style.display = 'none';
 
         if (role === 'personel') {
             activateTab(role);
@@ -363,13 +370,13 @@
         let roleTitle = (role === 'yonetici') ? 'Yönetici (TL) Girişi' : 'İK Girişi';
         let roleColor = (role === 'yonetici') ? '#f59e0b' : '#7c3aed';
 
+        // 1. ADIM: ŞİFRE KONTROLÜ
         const { value: password } = await Swal.fire({
             title: roleTitle,
             text: 'Lütfen giriş şifresini giriniz',
             input: 'password',
             inputPlaceholder: 'Şifre',
-            inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
-            confirmButtonText: 'Giriş Yap',
+            confirmButtonText: 'Devam Et',
             confirmButtonColor: roleColor,
             showCancelButton: true,
             cancelButtonText: 'İptal',
@@ -383,20 +390,69 @@
             return;
         }
 
-        const { value: adminName } = await Swal.fire({
-            title: 'Hoş Geldiniz',
-            text: 'İşlem kaydı için lütfen Adınızı Soyadınızı giriniz:',
-            input: 'text',
-            inputPlaceholder: 'Ad Soyad',
-            confirmButtonText: 'Panele Git',
+        // 2. ADIM: BİLGİ FORMU (AD, SOYAD, PROJE)
+        // TL için proje seçimi zorunlu, İK için opsiyonel veya hepsi olabilir.
+        // Burada TL için özel form yapısı kuruyoruz.
+        
+        let htmlContent = `
+            <input id="swal-name" class="swal2-input" placeholder="Adınız">
+            <input id="swal-surname" class="swal2-input" placeholder="Soyadınız">
+        `;
+
+        // Sadece yönetici ise Proje seçimi ekle
+        if (role === 'yonetici') {
+            htmlContent += `
+                <select id="swal-project" class="swal2-select" style="display:flex; width:80%; margin: 10px auto;">
+                    <option value="" disabled selected>Projenizi Seçiniz</option>
+                    <option value="TTNET">TTNET</option>
+                    <option value="TÜRKNET">TÜRKNET</option>
+                    <option value="OSK">OSK</option>
+                    <option value="SSPORT">SSPORT</option>
+                    <option value="TÜRKSAT">TÜRKSAT</option>
+                </select>
+            `;
+        }
+
+        const { value: formValues } = await Swal.fire({
+            title: 'Giriş Bilgileri',
+            html: htmlContent,
+            focusConfirm: false,
+            confirmButtonText: 'Panele Gir',
             confirmButtonColor: roleColor,
-            allowOutsideClick: false,
-            inputValidator: (value) => { if (!value) { return 'İsim alanı boş bırakılamaz!' } }
+            preConfirm: () => {
+                const name = document.getElementById('swal-name').value;
+                const surname = document.getElementById('swal-surname').value;
+                let project = "";
+                
+                if (role === 'yonetici') {
+                    project = document.getElementById('swal-project').value;
+                    if (!project) {
+                        Swal.showValidationMessage('Lütfen projenizi seçiniz');
+                        return false;
+                    }
+                }
+
+                if (!name || !surname) {
+                    Swal.showValidationMessage('Ad ve Soyad alanları zorunludur');
+                    return false;
+                }
+
+                return { name: name, surname: surname, project: project };
+            }
         });
 
-        if (adminName) {
-            currentAdminName = adminName;
+        if (formValues) {
+            currentAdminName = `${formValues.name} ${formValues.surname}`; // Ad Soyad birleştir
+            currentAdminProject = formValues.project; // Projeyi kaydet
+            
             document.getElementById('activeAdminName').innerText = currentAdminName;
+            
+            if(currentAdminProject) {
+                const pBadge = document.getElementById('activeProjectBadge');
+                pBadge.innerText = currentAdminProject + " Ekibi";
+                pBadge.style.display = "inline-block";
+            }
+            
             activateTab(role);
         }
     }
@@ -411,10 +467,10 @@
         if(role !== 'personel') {
             const msg = document.getElementById('admin-msg');
             if(role === 'yonetici') {
-                msg.innerHTML = "🛡️ <strong>Yönetici Paneli:</strong> Onayladığınız talepler İK'ya iletilir.";
+                msg.innerHTML = `🛡️ <strong>Yönetici Paneli (${currentAdminProject}):</strong> Sadece <u>${currentAdminProject}</u> projesindeki talepleri görüyorsunuz.`;
                 msg.style.background = "#fff7ed"; msg.style.color = "#c2410c";
             } else {
-                msg.innerHTML = "🏢 <strong>İK Paneli:</strong> Yöneticiden gelen talepleri sonuçlandırabilirsiniz.";
+                msg.innerHTML = "🏢 <strong>İK Paneli:</strong> Tüm projelerdeki talepleri yönetebilirsiniz.";
                 msg.style.background = "#f5f3ff"; msg.style.color = "#6d28d9";
             }
             loadRequests('admin');
@@ -524,8 +580,24 @@
 
             fetch(API_URL).then(res => res.json()).then(data => {
                 loader.classList.add('hidden');
-                if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Henüz talep yok.</td></tr>'; return; }
-                data.reverse().forEach(req => renderAdminRow(req, tbody));
+                
+                // ==========================================
+                // 🎯 FİLTRELEME MANTIĞI BURADA
+                // ==========================================
+                let filteredData = data;
+
+                // Eğer giriş yapan YÖNETİCİ ise, sadece kendi projesini görsün
+                if (currentRole === 'yonetici' && currentAdminProject) {
+                    filteredData = data.filter(req => req.project === currentAdminProject);
+                }
+                // İK ise filtreleme yapma (hepsini görsün)
+
+                if(filteredData.length === 0) { 
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Bu projede bekleyen talep yok.</td></tr>'; 
+                    return; 
+                }
+                
+                filteredData.reverse().forEach(req => renderAdminRow(req, tbody));
             });
         }
     }
@@ -604,4 +676,3 @@
 
 </body>
 </html>
-
