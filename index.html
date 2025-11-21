@@ -8,52 +8,29 @@
     
     <style>
         :root { --primary: #2563eb; --bg: #f1f5f9; --ik-color: #7c3aed; --header-text: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; user-select: none; /* Metin seçimi engelleme */ }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; user-select: none; }
         
         /* ==============================
-           SAYFA GİRİŞ KİLİT EKRANI STİLİ
+           SAYFA GİRİŞ KİLİT EKRANI
            ============================== */
         #page-lock-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #f1f5f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #f1f5f9; display: flex; justify-content: center; align-items: center; z-index: 9999;
         }
         .lock-card {
-            background: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 100%;
-            max-width: 350px;
+            background: white; padding: 40px; border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 100%; max-width: 350px;
         }
         .lock-input {
-            width: 100%;
-            padding: 15px;
-            margin: 20px 0;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1.1em;
-            text-align: center;
-            transition: 0.3s;
-            box-sizing: border-box;
+            width: 100%; padding: 15px; margin: 20px 0;
+            border: 2px solid #e2e8f0; border-radius: 10px;
+            font-size: 1.1em; text-align: center; transition: 0.3s; box-sizing: border-box;
         }
         .lock-input:focus { border-color: var(--primary); outline: none; }
         .lock-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
+            width: 100%; padding: 15px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-size: 1.1em; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
         }
         .lock-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
 
@@ -61,22 +38,12 @@
            ANA UYGULAMA STİLLERİ
            ============================== */
         .container { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        
-        .header-area {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 15px;
-        }
+        .header-area { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
         .logo-img { height: 60px; width: auto; object-fit: contain; }
         .header-title { color: var(--header-text); margin: 0; font-size: 1.8em; }
 
         .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; padding-bottom: 10px; }
         .nav-btn { flex: 1; padding: 15px; border: none; background: #e2e8f0; color: #64748b; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 1em; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .nav-btn:hover { opacity: 0.9; transform: translateY(-2px); }
         .nav-btn.active[data-role="personel"] { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
         .nav-btn.active[data-role="yonetici"] { background: #f59e0b; color: white; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
         .nav-btn.active[data-role="ik"] { background: var(--ik-color); color: white; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3); }
@@ -85,7 +52,6 @@
         label { display: block; font-weight: 600; margin-bottom: 5px; color: #334155; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1em; transition: 0.3s; }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        
         button.submit-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; transition: 0.3s; }
         button.submit-btn:hover { background: #1d4ed8; }
         button.submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
@@ -100,32 +66,22 @@
         .st-ik_bekliyor { background: #f5f3ff; color: #6d28d9; border: 1px solid #ede9fe; }
         .st-onaylandi { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; }
         .st-red { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
-
         .day-badge { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold; margin-left: 5px; }
         .project-badge { background: #334155; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; margin-left: 5px; }
-
         .action-btn { padding: 6px 12px; margin-right: 5px; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 0.9em; transition: 0.2s; }
         .action-btn:hover { transform: scale(1.05); }
         .approve { background: #22c55e; } 
         .reject { background: #ef4444; }
-        
         .hidden { display: none; }
         .loading { text-align: center; color: var(--primary); font-weight: bold; margin: 20px 0; }
 
         .history-list { display: flex; flex-direction: column; gap: 15px; }
-        
-        .history-card {
-            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;
-            border-left: 6px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            transition: all 0.3s ease; position: relative;
-        }
+        .history-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; border-left: 6px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.03); transition: all 0.3s ease; position: relative; }
         .history-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
-
         .history-card.st-onaylandi { border-left-color: #22c55e; background: linear-gradient(to right, #f0fdf4, #fff); }
         .history-card.st-red { border-left-color: #ef4444; background: linear-gradient(to right, #fef2f2, #fff); }
         .history-card.st-tl_bekliyor { border-left-color: #f59e0b; }
         .history-card.st-ik_bekliyor { border-left-color: #7c3aed; }
-
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .card-date { font-weight: 700; color: #1e293b; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
         .card-days-pill { background: #e2e8f0; color: #475569; font-size: 0.75em; padding: 4px 10px; border-radius: 20px; }
@@ -134,11 +90,7 @@
         .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 12px; margin-top: 5px; font-size: 0.9em; }
         .approver-badge { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #cbd5e1; padding: 5px 12px; border-radius: 30px; color: #334155; font-weight: 600; font-size: 0.85em; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         
-        #maintenance-screen {
-            display: none; text-align: center; padding: 50px;
-            background: white; max-width: 600px; margin: 50px auto;
-            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
+        #maintenance-screen { display: none; text-align: center; padding: 50px; background: white; max-width: 600px; margin: 50px auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -148,7 +100,7 @@
         <img src="https://cdn-icons-png.flaticon.com/512/2942/2942544.png" alt="Logo" style="height: 80px; margin-bottom: 20px;">
         <h2 style="color: #1e293b; margin-bottom: 10px;">Site Telekom Portal</h2>
         <p style="color: #64748b; margin-bottom: 20px;">Erişim için lütfen şifreyi giriniz.</p>
-        <input type="password" id="page-pass" class="lock-input" placeholder="Şifre" onkeyup="checkEnter(event)">
+        <input type="password" id="page-pass" class="lock-input" placeholder="Şifre (3636)" onkeyup="checkEnter(event)">
         <button class="lock-btn" onclick="verifyPageAccess()">Giriş Yap</button>
     </div>
 </div>
@@ -160,7 +112,6 @@
 </div>
 
 <div class="container" id="main-app" style="display: none;">
-    
     <div class="header-area">
         <img src="https://cdn-icons-png.flaticon.com/512/2942/2942544.png" alt="Site Telekom Logo" class="logo-img">
         <h2 class="header-title">İzin Yönetim Sistemi</h2>
@@ -182,7 +133,6 @@
                 <label>Ad Soyad</label>
                 <input type="text" id="name" placeholder="Adınız ve Soyadınız" required>
             </div>
-            
             <div class="form-group">
                 <label>Proje</label>
                 <select id="project" required>
@@ -194,7 +144,6 @@
                     <option value="TÜRKSAT">TÜRKSAT</option>
                 </select>
             </div>
-
             <div class="form-group" style="display:flex; gap:10px;">
                 <div style="flex:1">
                     <label>Başlangıç</label>
@@ -230,7 +179,6 @@
             <h4 style="display:flex; align-items:center; gap:10px;">📂 Geçmiş İzinlerim</h4>
             <p style="font-size:0.9em; color:#64748b;">Adınızı yazıp butona basarak eski taleplerinizin durumunu görebilirsiniz.</p>
             <button type="button" style="background:#475569; color:white; border:none; padding:12px 25px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1em;" onclick="loadRequests('personel')">🔍 Geçmişimi Getir</button>
-            
             <div id="personelHistoryList" class="history-list hidden" style="margin-top:25px;"></div>
         </div>
     </div>
@@ -243,12 +191,10 @@
                 <span id="activeProjectBadge" style="display:none; background:#334155; color:white; padding:2px 8px; border-radius:4px; font-size:0.85em;"></span>
             </div>
         </div>
-        
         <div id="loader" class="loading hidden">
             <div style="display:inline-block; width:20px; height:20px; border:3px solid #f3f3f3; border-top:3px solid var(--primary); border-radius:50%; animation: spin 1s linear infinite;"></div>
             Veriler Yükleniyor...
         </div>
-        
         <table id="requestsTable">
             <thead>
                 <tr>
@@ -263,74 +209,67 @@
     </div>
 </div>
 
-<style>
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-</style>
+<style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
 
 <script>
     // ==========================================
-    // 🔒 GÜVENLİK VE ŞİFRELEME AYARLARI
+    // 🔒 GÜVENLİK AYARLARI (ŞİFRELEME)
     // ==========================================
     
-    // 1. SAĞ TIK VE F12 ENGELLEME (Basit Koruma)
+    // Base64 Şifreler (Koda bakınca anlaşılmaz)
+    const PAGE_PASS_ENCODED = "MzYzNg==";       // 3636
+    const YONETICI_PASS_ENCODED = "MzY0ODc=";   // 36487
+    const IK_PASS_ENCODED = "c25uMTI4OTM2";     // snn128936
+    
+    const BAKIM_MODU = false; 
+
+    // Sağ tık ve F12 engelleme (Güvenlik için)
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
         if(e.keyCode == 123) { return false; } // F12
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)){ return false; } // Ctrl+Shift+I
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)){ return false; } // Ctrl+Shift+J
-        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)){ return false; } // Ctrl+U
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)){ return false; }
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)){ return false; }
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)){ return false; }
     }
 
-    // 2. HASH FONKSİYONU (Şifreyi sayıya çevirir)
-    function simpleHash(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = (hash << 5) - hash + char;
-            hash |= 0; // 32bit integera çevir
+    // ==========================================
+    // 🚀 GİRİŞ FONKSİYONLARI
+    // ==========================================
+    function safeAlert(icon, title, text) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: icon, title: title, text: text, confirmButtonColor: '#2563eb' });
+        } else {
+            alert(title + "\n" + text);
         }
-        return hash.toString();
     }
 
-    // ==========================================
-    // 🔑 GİZLENMİŞ ŞİFRELER (Hash Kodları)
-    // ==========================================
-    // 3636      -> "1600896"
-    // 36487     -> "47637409"
-    // snn128936 -> "3525003912"
-    
-    const PAGE_HASH = "1600896";        // Site Giriş Şifresi (3636)
-    const YONETICI_HASH = "47637409";   // Yönetici Şifresi (36487)
-    const IK_HASH = "3525003912";       // İK Şifresi (snn128936)
-
-    const BAKIM_MODU = false; 
-
-    // ==========================================
-    
     function checkEnter(e) {
         if(e.key === "Enter") verifyPageAccess();
     }
 
     function verifyPageAccess() {
         const input = document.getElementById('page-pass').value;
-        // Girilen şifreyi hashle ve kayıtlı hash ile karşılaştır
-        if (simpleHash(input) === PAGE_HASH) {
-            document.getElementById('page-lock-screen').style.display = 'none'; 
-            if (BAKIM_MODU) {
-                document.getElementById('maintenance-screen').style.display = 'block';
-                document.body.style.background = "#e2e8f0";
+        // btoa = Tarayıcının dahili şifreleme fonksiyonu
+        try {
+            if (btoa(input) === PAGE_PASS_ENCODED) {
+                document.getElementById('page-lock-screen').style.display = 'none'; 
+                if (BAKIM_MODU) {
+                    document.getElementById('maintenance-screen').style.display = 'block';
+                    document.body.style.background = "#e2e8f0";
+                } else {
+                    document.getElementById('main-app').style.display = 'block';
+                }
             } else {
-                document.getElementById('main-app').style.display = 'block';
+                safeAlert('error', 'Hatalı Şifre', 'Lütfen tekrar deneyiniz.');
             }
-        } else {
-            Swal.fire({ icon: 'error', title: 'Hatalı Şifre', text: 'Lütfen tekrar deneyiniz.', confirmButtonColor: '#ef4444' });
+        } catch (e) {
+            safeAlert('error', 'Hata', 'Giriş yapılırken bir sorun oluştu.');
         }
     }
 
     // ==========================================
     // MEVCUT UYGULAMA KODLARI
     // ==========================================
-
     const API_URL = "https://script.google.com/macros/s/AKfycby1QGB4lpO_VRt-PYCORj9DggoYvvwGPcSxGq4gTD9deYPpyNQr1bjMwncaKW6hGxgeSw/exec";
     
     let currentRole = 'personel';
@@ -338,83 +277,68 @@
     let currentAdminProject = ''; 
 
     async function switchRole(role) {
-        currentAdminName = '';
-        currentAdminProject = '';
+        currentAdminName = ''; currentAdminProject = '';
         document.getElementById('activeAdminName').innerText = '';
         document.getElementById('activeProjectBadge').style.display = 'none';
 
-        if (role === 'personel') {
+        if (role === 'personel') { activateTab(role); return; }
+
+        let targetHash = (role === 'yonetici') ? YONETICI_PASS_ENCODED : IK_PASS_ENCODED;
+        let roleTitle = (role === 'yonetici') ? 'Yönetici (TL) Girişi' : 'İK Girişi';
+        let roleColor = (role === 'yonetici') ? '#f59e0b' : '#7c3aed';
+
+        // Eğer Swal yüklenmediyse manuel prompt kullan
+        if (typeof Swal === 'undefined') {
+            let pass = prompt(roleTitle + "\nLütfen şifrenizi giriniz:");
+            if(!pass) return;
+            if(btoa(pass) !== targetHash) { alert("Hatalı Şifre!"); return; }
+            
+            let name = prompt("Adınız Soyadınız:");
+            if(!name) return;
+            
+            if(role === 'yonetici') {
+                let prj = prompt("Projeniz (TTNET, TÜRKNET, OSK, SSPORT, TÜRKSAT):");
+                if(!prj) return;
+                currentAdminProject = prj.toUpperCase();
+            }
+            currentAdminName = name;
             activateTab(role);
             return;
         }
 
-        let targetHash = (role === 'yonetici') ? YONETICI_HASH : IK_HASH;
-        let roleTitle = (role === 'yonetici') ? 'Yönetici (TL) Girişi' : 'İK Girişi';
-        let roleColor = (role === 'yonetici') ? '#f59e0b' : '#7c3aed';
-
+        // Swal yüklüyse görsel giriş
         const { value: password } = await Swal.fire({
-            title: roleTitle,
-            text: 'Lütfen giriş şifresini giriniz',
-            input: 'password',
-            inputPlaceholder: 'Şifre',
-            confirmButtonText: 'Devam Et',
-            confirmButtonColor: roleColor,
-            showCancelButton: true,
-            cancelButtonText: 'İptal',
-            backdrop: `rgba(0,0,0,0.4)`
+            title: roleTitle, text: 'Lütfen giriş şifresini giriniz', input: 'password',
+            inputPlaceholder: 'Şifre', confirmButtonText: 'Devam Et', confirmButtonColor: roleColor,
+            showCancelButton: true, cancelButtonText: 'İptal', backdrop: `rgba(0,0,0,0.4)`
         });
 
         if (!password) return;
-
-        // BURADA GİRİLEN ŞİFREYİ HASHLEYİP KONTROL EDİYORUZ
-        if (simpleHash(password) !== targetHash) {
+        if (btoa(password) !== targetHash) {
             Swal.fire({ icon: 'error', title: 'Hatalı Şifre!', text: 'Girdiğiniz şifre yanlış.', confirmButtonColor: '#ef4444' });
             return;
         }
 
-        // 2. ADIM: BİLGİ FORMU
-        let htmlContent = `
-            <input id="swal-name" class="swal2-input" placeholder="Adınız">
-            <input id="swal-surname" class="swal2-input" placeholder="Soyadınız">
-        `;
-
+        let htmlContent = `<input id="swal-name" class="swal2-input" placeholder="Adınız"><input id="swal-surname" class="swal2-input" placeholder="Soyadınız">`;
         if (role === 'yonetici') {
-            htmlContent += `
-                <select id="swal-project" class="swal2-select" style="display:flex; width:80%; margin: 10px auto;">
-                    <option value="" disabled selected>Projenizi Seçiniz</option>
-                    <option value="TTNET">TTNET</option>
-                    <option value="TÜRKNET">TÜRKNET</option>
-                    <option value="OSK">OSK</option>
-                    <option value="SSPORT">SSPORT</option>
-                    <option value="TÜRKSAT">TÜRKSAT</option>
-                </select>
-            `;
+            htmlContent += `<select id="swal-project" class="swal2-select" style="display:flex; width:80%; margin: 10px auto;">
+                <option value="" disabled selected>Projenizi Seçiniz</option>
+                <option value="TTNET">TTNET</option><option value="TÜRKNET">TÜRKNET</option>
+                <option value="OSK">OSK</option><option value="SSPORT">SSPORT</option><option value="TÜRKSAT">TÜRKSAT</option></select>`;
         }
 
         const { value: formValues } = await Swal.fire({
-            title: 'Giriş Bilgileri',
-            html: htmlContent,
-            focusConfirm: false,
-            confirmButtonText: 'Panele Gir',
-            confirmButtonColor: roleColor,
+            title: 'Giriş Bilgileri', html: htmlContent, focusConfirm: false,
+            confirmButtonText: 'Panele Gir', confirmButtonColor: roleColor,
             preConfirm: () => {
                 const name = document.getElementById('swal-name').value;
                 const surname = document.getElementById('swal-surname').value;
                 let project = "";
-                
                 if (role === 'yonetici') {
                     project = document.getElementById('swal-project').value;
-                    if (!project) {
-                        Swal.showValidationMessage('Lütfen projenizi seçiniz');
-                        return false;
-                    }
+                    if (!project) { Swal.showValidationMessage('Lütfen projenizi seçiniz'); return false; }
                 }
-
-                if (!name || !surname) {
-                    Swal.showValidationMessage('Ad ve Soyad alanları zorunludur');
-                    return false;
-                }
-
+                if (!name || !surname) { Swal.showValidationMessage('Ad ve Soyad alanları zorunludur'); return false; }
                 return { name: name, surname: surname, project: project };
             }
         });
@@ -422,15 +346,11 @@
         if (formValues) {
             currentAdminName = `${formValues.name} ${formValues.surname}`; 
             currentAdminProject = formValues.project; 
-            
             document.getElementById('activeAdminName').innerText = currentAdminName;
-            
             if(currentAdminProject) {
                 const pBadge = document.getElementById('activeProjectBadge');
-                pBadge.innerText = currentAdminProject + " Ekibi";
-                pBadge.style.display = "inline-block";
+                pBadge.innerText = currentAdminProject + " Ekibi"; pBadge.style.display = "inline-block";
             }
-            
             activateTab(role);
         }
     }
@@ -462,14 +382,8 @@
         if(s && e) {
             const diff = new Date(e) - new Date(s);
             const days = Math.ceil(diff / (1000*60*60*24)) + 1;
-            if(days > 0) {
-                p.innerText = days + " Gün";
-                p.style.color = "var(--primary)";
-                p.style.fontWeight = "bold";
-            } else {
-                p.innerText = "Hatalı Tarih";
-                p.style.color = "red";
-            }
+            if(days > 0) { p.innerText = days + " Gün"; p.style.color = "var(--primary)"; p.style.fontWeight = "bold"; } 
+            else { p.innerText = "Hatalı Tarih"; p.style.color = "red"; }
         }
     }
 
@@ -480,35 +394,30 @@
         const e_date = document.getElementById('endDate').value;
         const days = Math.ceil((new Date(e_date) - new Date(s)) / (1000*60*60*24)) + 1;
 
-        if(days <= 0) { Swal.fire('Hata', 'Bitiş tarihi başlangıçtan önce olamaz.', 'error'); return; }
+        if(days <= 0) { safeAlert('error', 'Hata', 'Bitiş tarihi başlangıçtan önce olamaz.'); return; }
 
         btn.disabled = true; btn.innerText = "Gönderiliyor...";
 
         const data = {
-            action: 'create',
-            id: Date.now(),
-            name: document.getElementById('name').value.trim(),
-            project: document.getElementById('project').value,
-            start: s, end: e_date, days: days,
-            type: document.getElementById('type').value,
-            reason: document.getElementById('reason').value,
+            action: 'create', id: Date.now(), name: document.getElementById('name').value.trim(),
+            project: document.getElementById('project').value, start: s, end: e_date, days: days,
+            type: document.getElementById('type').value, reason: document.getElementById('reason').value,
             status: 'tl_bekliyor'
         };
 
         fetch(API_URL, { method: "POST", body: JSON.stringify(data) })
         .then(() => {
-            Swal.fire({ icon: 'success', title: 'Başarılı!', text: 'İzin talebiniz yönetici onayına gönderildi.', timer: 3000, showConfirmButton: false });
-            document.getElementById('leaveForm').reset();
-            document.getElementById('dayPreview').innerText = "-";
+            safeAlert('success', 'Başarılı!', 'İzin talebiniz yönetici onayına gönderildi.');
+            document.getElementById('leaveForm').reset(); document.getElementById('dayPreview').innerText = "-";
             btn.disabled = false; btn.innerText = "Talebi Gönder";
-        }).catch(err => { Swal.fire('Hata', 'Sunucu hatası: ' + err, 'error'); btn.disabled = false; });
+        }).catch(err => { safeAlert('error', 'Hata', 'Sunucu hatası: ' + err); btn.disabled = false; });
     }
 
     function loadRequests(mode) {
         let fetchUrl = API_URL;
         if (mode === 'personel') {
             const nameVal = document.getElementById('name').value.trim();
-            if(!nameVal) { Swal.fire('Uyarı','Lütfen önce yukarıya Ad Soyad giriniz.','warning'); return; }
+            if(!nameVal) { safeAlert('warning', 'Uyarı', 'Lütfen önce yukarıya Ad Soyad giriniz.'); return; }
             fetchUrl += "?name=" + encodeURIComponent(nameVal);
             
             const listContainer = document.getElementById('personelHistoryList');
@@ -522,61 +431,35 @@
                 data.reverse().forEach(req => {
                     let footerContent = "";
                     if(req.status === 'red') {
-                        footerContent = `
-                            <div style="display:flex; flex-direction:column; gap:5px; width:100%;">
+                        footerContent = `<div style="display:flex; flex-direction:column; gap:5px; width:100%;">
                                 <span style="color:#ef4444; font-weight:bold;">🛑 Red Sebebi: ${req.reject_reason || '-'}</span>
-                                <div class="approver-badge" style="border-color:#fee2e2; background:#fef2f2; color:#b91c1c;">
-                                    👤 Red Eden: ${req.approver || 'Yönetici'}
-                                </div>
-                            </div>
-                        `;
+                                <div class="approver-badge" style="border-color:#fee2e2; background:#fef2f2; color:#b91c1c;">👤 Red Eden: ${req.approver || 'Yönetici'}</div></div>`;
                     } else if (req.approver) {
                         footerContent = `<div class="approver-badge"><span style="color:#22c55e">✔</span> Onaylayan: ${req.approver}</div>`;
                     } else {
                         footerContent = `<span style="color:#f59e0b; font-style:italic;">⏳ İşlem Bekleniyor</span>`;
                     }
-
-                    const cardHtml = `
+                    listContainer.innerHTML += `
                         <div class="history-card st-${req.status}">
                             <div class="card-header">
-                                <div class="card-date">
-                                    📅 ${formatDate(req.start)} - ${formatDate(req.end)}
-                                    <span class="card-days-pill">${req.days} Gün</span>
-                                </div>
+                                <div class="card-date">📅 ${formatDate(req.start)} - ${formatDate(req.end)} <span class="card-days-pill">${req.days} Gün</span></div>
                                 <div class="status st-${req.status}">${getStatusName(req.status)}</div>
                             </div>
-                            <div class="card-body">
-                                <div class="card-type">${req.type}</div>
-                                <div>${req.reason}</div>
-                            </div>
-                            <div class="card-footer">
-                                ${footerContent}
-                            </div>
-                        </div>
-                    `;
-                    listContainer.innerHTML += cardHtml;
+                            <div class="card-body"><div class="card-type">${req.type}</div><div>${req.reason}</div></div>
+                            <div class="card-footer">${footerContent}</div>
+                        </div>`;
                 });
             });
         } else {
             const loader = document.getElementById('loader');
             const tbody = document.getElementById('tableBody');
-            loader.classList.remove('hidden');
-            tbody.innerHTML = '';
+            loader.classList.remove('hidden'); tbody.innerHTML = '';
 
             fetch(API_URL).then(res => res.json()).then(data => {
                 loader.classList.add('hidden');
-                
                 let filteredData = data;
-
-                if (currentRole === 'yonetici' && currentAdminProject) {
-                    filteredData = data.filter(req => req.project === currentAdminProject);
-                }
-
-                if(filteredData.length === 0) { 
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Bu projede bekleyen talep yok.</td></tr>'; 
-                    return; 
-                }
-                
+                if (currentRole === 'yonetici' && currentAdminProject) { filteredData = data.filter(req => req.project === currentAdminProject); }
+                if(filteredData.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Bu projede bekleyen talep yok.</td></tr>'; return; }
                 filteredData.reverse().forEach(req => renderAdminRow(req, tbody));
             });
         }
@@ -590,28 +473,27 @@
         } else if(currentRole === 'ik' && req.status === 'ik_bekliyor') {
             actionHtml = `<button class="action-btn approve" onclick="updateStatus(${req.id}, 'onaylandi')" title="Bitir">✔</button>
                           <button class="action-btn reject" onclick="rejectRequest(${req.id})" title="Reddet">✖</button>`;
-        } else {
-            actionHtml = `<span class="status st-${req.status}">${getStatusName(req.status)}</span>`;
-        }
+        } else { actionHtml = `<span class="status st-${req.status}">${getStatusName(req.status)}</span>`; }
 
         let details = "";
         if(req.status === 'red' && req.reject_reason) { details += `<span class="reject-reason">Red Nedeni: ${req.reject_reason}</span>`; }
         if(req.approver) { details += `<div class="audit-info">📝 ${req.approver}</div>`; }
-
         const projectName = req.project ? req.project : "";
 
-        const row = `
-            <tr>
+        tbody.innerHTML += `<tr>
                 <td><strong style="color:#1e293b;">${req.name}</strong><br>${projectName ? `<span class="project-badge">${projectName}</span>` : ''}</td>
                 <td>${formatDate(req.start)} <span class="day-badge">${req.days} G</span></td>
                 <td>${req.type}<br><small style="color:#64748b; font-style:italic;">"${req.reason}"</small></td>
                 <td>${actionHtml}${details}</td>
-            </tr>
-        `;
-        tbody.innerHTML += row;
+            </tr>`;
     }
 
     async function rejectRequest(id) {
+        if (typeof Swal === 'undefined') {
+            let reason = prompt("Reddetme Sebebi:");
+            if(reason) updateStatus(id, 'red', reason);
+            return;
+        }
         const { value: reason } = await Swal.fire({
             title: 'Reddetme Sebebi', input: 'text', inputLabel: 'Lütfen red sebebini giriniz:',
             inputPlaceholder: 'Örn: Yoğunluk nedeniyle...', showCancelButton: true,
@@ -622,12 +504,14 @@
     }
 
     function updateStatus(id, status, rejectReason = "") {
-        if(status !== 'red') {
+        if(status !== 'red' && typeof Swal !== 'undefined') {
              Swal.fire({
                 title: 'Emin misiniz?', text: "Bu işlemi onaylıyor musunuz?", icon: 'question',
                 showCancelButton: true, confirmButtonColor: '#22c55e', cancelButtonColor: '#d33',
                 confirmButtonText: 'Evet, Onayla', cancelButtonText: 'Vazgeç'
             }).then((result) => { if (result.isConfirmed) { executeStatusUpdate(id, status, rejectReason); } });
+        } else if (status !== 'red') {
+            if(confirm("Bu işlemi onaylıyor musunuz?")) executeStatusUpdate(id, status, rejectReason);
         } else { executeStatusUpdate(id, status, rejectReason); }
     }
 
@@ -636,8 +520,7 @@
         const payload = { action: 'update', id: id, status: status, approver: currentAdminName, rejectReason: rejectReason };
         fetch(API_URL, { method: "POST", body: JSON.stringify(payload) }).then(() => {
             loadRequests('admin');
-            const msg = status === 'red' ? 'Talep reddedildi.' : 'İşlem başarıyla tamamlandı.';
-            Swal.fire('Tamamlandı!', msg, 'success');
+            safeAlert('success', 'Tamamlandı!', status === 'red' ? 'Talep reddedildi.' : 'İşlem başarıyla tamamlandı.');
         });
     }
 
@@ -653,6 +536,5 @@
         return map[s] || s;
     }
 </script>
-
 </body>
 </html>
