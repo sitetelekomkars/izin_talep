@@ -173,16 +173,13 @@
         const USERS_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7eIsOqTEhUtHWEiEJzs8mzySd9btRzCG8gsd8xvvz3JFn2bfs3rJl0M4DYdt5NNrNvvrptKYiQyWa/pub?gid=1075778951&single=true&output=csv";
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxd0BsAHEhHHXIPVmx1svVi8GxbR1s_wlxW2fNABeHYvu2BRrYOn8eDMCF-7xZFqw8_BA/exec"; 
 
-        // YEDEK VERİLER (GÜVENLİK AĞI - Tablo Boşsa Bunlar Çalışır)
+        // YEDEK VERİLER
         const backupSportsData = [
-            { title: "WorldSBK", icon: "fa-motorcycle", desc: "Dünya Superbike Şampiyonası. Sokakta satılan motorların modifiye edilip yarıştığı seri.", tip: "🇹🇷 Toprak Razgatlıoğlu burada!", detail: "Toprak Razgatlıoğlu 2021 ve 2024 Dünya Şampiyonu. BMW ile yarışıyor.", pronunciation: "Vörld Süper Bayk" },
-            { title: "MotoGP", icon: "fa-motorcycle", desc: "Motosikletin F1'i.", tip: "En hızlılar.", detail: "Prototip motorlar.", pronunciation: "Moto Ji Pi" },
-            { title: "NBA", icon: "fa-basketball", desc: "Dünyanın en iyi basketbol ligi.", tip: "LeBron, Curry, Alperen Şengün.", detail: "Normal sezon ve Play-off.", pronunciation: "En Bi Ey" },
-            { title: "UFC", icon: "fa-hand-fist", desc: "Kafes Dövüşü.", tip: "En sert dövüş.", detail: "Islam Makhachev, İbo Aslan.", pronunciation: "Yu Ef Si" }
+            { title: "WorldSBK", icon: "fa-motorcycle", desc: "Dünya Superbike Şampiyonası.", tip: "Toprak Razgatlıoğlu", detail: "BMW ile yarışıyor.", pronunciation: "Vörld Süper Bayk" },
+            { title: "NBA", icon: "fa-basketball", desc: "Dünyanın en iyi basketbol ligi.", tip: "LeBron, Curry, Alperen.", detail: "Normal sezon ve Play-off.", pronunciation: "En Bi Ey" }
         ];
         const backupSalesScripts = [
-            { title: "Açılış", text: "Merhaba, S Sport Plus'tan arıyorum..." },
-            { title: "Fiyat", text: "Günlük sadece bir çay parasına..." }
+            { title: "Açılış", text: "Merhaba, S Sport Plus'tan arıyorum..." }
         ];
         const backupQuizQuestions = [
             { q: "S Sport Plus'ta hangisi yok?", opts: ["NBA", "Premier Lig", "La Liga"], a: 1 }
@@ -191,6 +188,9 @@
         let database = [], newsData = [], sportsData = [], salesScripts = [], quizQuestions = [], users = [];
         let currentUser = "", isAdminMode = false, sessionTimeout;
         let activeCards = [];
+
+        // Quiz Değişkenleri
+        let currentQuestion=0, score=0;
 
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.onkeydown = function(e) { if(e.keyCode == 123) return false; }
@@ -279,9 +279,98 @@
             if(activeCards.length > 0) renderCards(activeCards); else renderCards(database); 
             if(document.getElementById('guide-modal').style.display === 'flex') openGuide();
             if(document.getElementById('sales-modal').style.display === 'flex') openSales();
-            if(document.getElementById('quiz-modal').style.display === 'flex') openQuiz();
             if(document.getElementById('news-modal').style.display === 'flex') openNews();
+            if(document.getElementById('quiz-modal').style.display === 'flex') openQuiz();
         }
+
+        // ==========================
+        //  BUTON FONKSİYONLARI (DÜZELTİLMİŞ & ADMİN UYUMLU)
+        // ==========================
+
+        function openGuide() { 
+            document.getElementById('guide-modal').style.display = 'flex'; 
+            const grid=document.getElementById('guide-grid'); 
+            grid.innerHTML=''; 
+            sportsData.forEach((s, index) => { 
+                let pronHtml = s.pronunciation ? `<div class="pronunciation-badge">🗣️ ${s.pronunciation}</div>` : ''; 
+                
+                const safeTitle = s.title.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                const safeDesc = s.desc.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                const safeTip = s.tip.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                const safeDetail = s.detail.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                const safePron = s.pronunciation ? s.pronunciation.replace(/"/g, '&quot;').replace(/'/g, "\\'") : "";
+                
+                let editBtn = isAdminMode ? `<i class="fas fa-pencil-alt edit-icon" style="display:block !important; top:5px; right:5px; z-index:50;" onclick="editSport('${safeTitle}', '${safeDesc}', '${safeTip}', '${safeDetail}', '${safePron}')"></i>` : '';
+
+                grid.innerHTML += `
+                <div class="guide-item" onclick="showSportDetail(${index})">
+                    ${editBtn}
+                    <i class="fas ${s.icon} guide-icon"></i>
+                    <span class="guide-title">${s.title}</span>
+                    ${pronHtml}
+                    <div class="guide-desc">${s.desc}</div>
+                    <div class="guide-tip"><i class="fas fa-lightbulb"></i> ${s.tip}</div>
+                    <div style="font-size:0.8rem; color:#999; margin-top:5px;">(Detay için tıkla)</div>
+                </div>`; 
+            }); 
+        }
+
+        function showSportDetail(index) { 
+            const sport = sportsData[index]; 
+            const detailText = sport.detail ? sport.detail : "Bu içerik için henüz detay eklenmemiş."; 
+            const pronDetail = sport.pronunciation ? `<div style="color:#e65100; font-weight:bold; margin-bottom:15px;">🗣️ Okunuşu: ${sport.pronunciation}</div>` : ''; 
+            Swal.fire({ title: `<i class="fas ${sport.icon}" style="color:#0e1b42;"></i> ${sport.title}`, html: `${pronDetail}<div style="text-align:left; font-size:1rem; line-height:1.6;">${detailText}</div>`, showCloseButton: true, showConfirmButton: false, width: '600px', background: '#f8f9fa' }); 
+        }
+
+        function openSales() { 
+            document.getElementById('sales-modal').style.display = 'flex'; 
+            const grid=document.getElementById('sales-grid'); 
+            grid.innerHTML=''; 
+            salesScripts.forEach((s, index) => { 
+                const safeTitle = s.title.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                const safeText = s.text.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                let editBtn = isAdminMode ? `<i class="fas fa-pencil-alt edit-icon" style="display:block !important; top:5px; right:5px; z-index:50;" onclick="editSales('${safeTitle}', '${safeText}')"></i>` : '';
+
+                grid.innerHTML += `
+                <div class="sales-item" id="sales-${index}" onclick="toggleSales('${index}')">
+                    ${editBtn}
+                    <div class="sales-header"><span class="sales-title">${s.title}</span><i class="fas fa-chevron-down" id="icon-${index}" style="color:#10b981;"></i></div>
+                    <div class="sales-text">${s.text}<div style="text-align:right; margin-top:15px;"><button class="btn btn-copy" onclick="event.stopPropagation(); copyText('${s.text.replace(/'/g, "\\'")}')"><i class="fas fa-copy"></i> Kopyala</button></div></div>
+                </div>`; 
+            }); 
+        }
+
+        function toggleSales(index) { const item = document.getElementById(`sales-${index}`); const icon = document.getElementById(`icon-${index}`); item.classList.toggle('active'); if(item.classList.contains('active')){ icon.classList.replace('fa-chevron-down', 'fa-chevron-up'); } else { icon.classList.replace('fa-chevron-up', 'fa-chevron-down'); } }
+
+        function openQuiz() { 
+            if(isAdminMode) { openQuizEditor(); return; } // Admin moddaysa editörü aç
+            document.getElementById('quiz-modal').style.display='flex'; currentQuestion=0; score=0; showStartScreen(); 
+        }
+
+        function showStartScreen() { document.getElementById('quiz-body').innerHTML=`<div class="quiz-final"><h3>Hazır mısın?</h3><button class="restart-btn" style="background:var(--quiz);" onclick="showQuestion()">BAŞLA</button></div>`; }
+        
+        function showQuestion() { 
+            if(currentQuestion>=quizQuestions.length){showResult();return;} 
+            const q=quizQuestions[currentQuestion]; 
+            let html=`<div class="quiz-score">Soru: ${currentQuestion+1}</div><div class="quiz-question">${q.q}</div><div class="quiz-options">`; 
+            q.opts.forEach((opt,i)=>{ html+=`<button class="quiz-btn-opt" onclick="checkAnswer(this, ${i})">${opt}</button>`; }); 
+            html+=`</div>`; 
+            document.getElementById('quiz-body').innerHTML=html; 
+        }
+        
+        function checkAnswer(btn,i) { 
+            const correct=quizQuestions[currentQuestion].a; 
+            document.querySelectorAll('.quiz-btn-opt').forEach(b=>b.disabled=true); 
+            if(i===correct){btn.classList.add('correct'); score+=10; Swal.fire({icon:'success',title:'Doğru!',timer:1000,toast:true,position:'top',showConfirmButton:false});}
+            else{btn.classList.add('wrong'); Swal.fire({icon:'error',title:'Yanlış!',timer:1000,toast:true,position:'top',showConfirmButton:false});} 
+            setTimeout(()=>{currentQuestion++; showQuestion();},1500); 
+        }
+        
+        function showResult() { document.getElementById('quiz-body').innerHTML=`<div class="quiz-final"><h3>Bitti! Puan: ${score}</h3><button class="restart-btn" onclick="openQuiz()">Tekrar</button></div>`; }
+
+        // ==========================
+        //  DÜZENLEME FONKSİYONLARI
+        // ==========================
 
         async function editContent(title, category, cText, cScript) {
             const { value: formValues } = await Swal.fire({
@@ -400,7 +489,6 @@
                 download: true, header: true,
                 complete: function(results) {
                     const rawData = results.data;
-                    // KONTROL: EĞER TABLODAN VERİ GELMEZSE YEDEKLERİ KULLAN
                     const fetchedCards = rawData.filter(i => ['card','bilgi','teknik','kampanya','ikna'].includes(i.Type)).map(i => ({ title: i.Title, category: i.Category, text: i.Text, script: i.Script, code: i.Code, link: i.Link }));
                     const fetchedNews = rawData.filter(i => i.Type === 'news').map(i => ({ date: i.Date, title: i.Title, desc: i.Text, type: i.Category }));
                     const fetchedSports = rawData.filter(i => i.Type === 'sport').map(i => ({ title: i.Title, icon: i.Icon, desc: i.Text, tip: i.Tip, detail: i.Detail, pronunciation: i.Pronunciation }));
@@ -460,6 +548,7 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         let tickerIndex = 0;
         function startTicker() { const t = document.getElementById('ticker-content'); if(newsData.length === 0) { t.innerHTML = "Güncel duyuru yok."; return; } function showNext() { const i = newsData[tickerIndex]; t.style.animation = 'none'; t.offsetHeight; t.style.animation = 'slideIn 0.5s ease-out'; t.innerHTML = `<strong>${i.date}:</strong> ${i.title} - ${i.desc}`; tickerIndex = (tickerIndex + 1) % newsData.length; } showNext(); setInterval(showNext, 5000); }
+        
         function openNews() { document.getElementById('news-modal').style.display = 'flex'; const c = document.getElementById('news-container'); c.innerHTML = ''; newsData.forEach(i => { 
             const safeTitle = i.title.replace(/"/g, '&quot;').replace(/'/g, "\\'");
             const safeDesc = i.desc.replace(/"/g, '&quot;').replace(/'/g, "\\'");
@@ -475,6 +564,7 @@
                 <span class="news-date">${i.date}</span><span class="news-title">${i.title}</span><div class="news-desc">${i.desc}</div><span class="news-tag ${cl}">${tx}</span>
             </div>`; 
         }); }
+        
         const wizardSteps={start:{title:"İade Talebi Analizi",text:"Lütfen müşterinin durumunu seçiniz:",options:[{text:"İçerik İzlemiş / Kullanım Var",next:"izleme_var"},{text:"Aylık Paket (İzleme YOK)",next:"aylik_izleme_yok"},{text:"Yıllık Paket (İzleme YOK)",next:"yillik_izleme_yok"},{text:"Mükerrer (Çift) Çekim",next:"mukerrer"},{text:"Aynı Gün Yanlışlıkla Yıllık Alım",next:"ayni_gun_yillik"},{text:"Apple / Google Store İptali",next:"store_iptal"},{text:"Winback Paket Geçiş İadesi",next:"winback_iade"}]},izleme_var:{result:"red",title:"❌ İADE REDDEDİLİR",text:"İçerik izlenmişse (genel arıza hariç) iade yapılmaz.",script:"Hizmetimizden aktif olarak faydalandığınız için iade prosedürlerimiz gereği talebinize olumlu yanıt veremiyoruz."},aylik_izleme_yok:{title:"Aylık Paket - İzleme Yok",text:"THH tehdidi var mı?",options:[{text:"Evet/Israrcı",next:"aylik_teklif"},{text:"Hayır",next:"izleme_var"}]},aylik_teklif:{title:"İndirim Teklifi",text:"Önce 6AY50 ile indirim teklif et.",options:[{text:"İndirimi Kabul Etti",next:"indirim_kabul"},{text:"Reddetti (Tam İade)",next:"tam_iade"}]},yillik_izleme_yok:{title:"Yıllık Paket",text:"Paket kampanyalı mıydı?",options:[{text:"Hayır (Standart)",next:"yillik_standart"},{text:"Evet (Kampanyalı)",next:"yillik_kampanyali"}]},yillik_standart:{title:"Standart Yıllık",text:"Sırasıyla: 1. YILLIKLOCA İndirimi, 2. Aylığa Geçiş öner.",options:[{text:"Teklifi Kabul Etti",next:"islem_tamam"},{text:"Hepsini Reddetti (Tam İade)",next:"tam_iade"}]},yillik_kampanyali:{title:"Kampanyalı Yıllık",text:"Sadece Aylığa Geçiş önerilebilir.",options:[{text:"Aylığa Geçişi Kabul Etti",next:"ayliga_gecis"},{text:"Reddetti (Tam İade)",next:"tam_iade"}]},mukerrer:{title:"Mükerrer Çekim",text:"15 gün içinde ve Aynı Cihaz/IP mi?",options:[{text:"Evet",next:"mukerrer_iade"},{text:"Hayır",next:"izleme_var"}]},ayni_gun_yillik:{title:"Aynı Gün Yıllık",text:"24 saat içinde mi?",options:[{text:"Evet",next:"bir_defaya_mahsus"},{text:"Hayır",next:"izleme_var"}]},store_iptal:{result:"red",title:"❌ BİZ İPTAL EDEMEYİZ",text:"Apple/Google alımları telefondan yapılmalı."},winback_iade:{result:"yellow",title:"⚠️ SADECE 2. PAKET İADE",text:"Sadece son alınan indirimli paket iade edilebilir."},indirim_kabul:{result:"green",title:"✅ İNDİRİM TANIMLA",text:"139.5 TL iade yapıldı."},tam_iade:{result:"green",title:"✅ TAM İADE YAP",text:"Teklifler reddedildi, iade sağla."},mukerrer_iade:{result:"green",title:"✅ MÜKERRER İADE",text:"Fazla paketi iade et."},ayliga_gecis:{result:"green",title:"✅ AYLIK GEÇİŞ",text:"Yıllık iptal, aylık tanımla, farkı iade et."},bir_defaya_mahsus:{result:"green",title:"✅ TEK SEFERLİK İADE",text:"Yıllık iade, aylık devam."},islem_tamam:{result:"green",title:"✅ İŞLEM TAMAM",text:"Teklif kabul edildi."}};
         function openWizard(){document.getElementById('wizard-modal').style.display='flex';renderStep('start');}
         function renderStep(k){const s=wizardSteps[k];const b=document.getElementById('wizard-body');let h=`<h2>${s.title||''}</h2>`;if(s.result){let i=s.result==='red'?'🛑':(s.result==='green'?'✅':'⚠️');let c=s.result==='red'?'res-red':(s.result==='green'?'res-green':'res-yellow');h+=`<div class="result-box ${c}"><div style="font-size:3rem;margin-bottom:10px;">${i}</div><h3>${s.title}</h3><p>${s.text}</p>${s.script?`<div class="script-box">${s.script}</div>`:''}</div><button class="restart-btn" onclick="renderStep('start')"><i class="fas fa-redo"></i> Başa Dön</button>`;}else{h+=`<p>${s.text}</p><div class="wizard-options">`;s.options.forEach(o=>{h+=`<button class="option-btn" onclick="renderStep('${o.next}')"><i class="fas fa-chevron-right"></i> ${o.text}</button>`;});h+=`</div>`;if(k!=='start')h+=`<button class="restart-btn" onclick="renderStep('start')" style="background:#eee;color:#333;margin-top:15px;">Geri Dön</button>`;}b.innerHTML=h;}
